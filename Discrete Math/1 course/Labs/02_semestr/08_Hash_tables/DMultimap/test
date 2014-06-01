@@ -1,0 +1,18 @@
+put d 83
+get d
+put b 89
+get d
+deleteall d
+get d
+put b 76
+get b
+delete b 76
+get b
+delete d 83
+get b
+delete b 89
+get b
+put a 8
+get a
+deleteall a
+get a

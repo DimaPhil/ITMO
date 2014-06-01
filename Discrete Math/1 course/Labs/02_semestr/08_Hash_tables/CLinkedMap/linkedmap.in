@@ -1,0 +1,6 @@
+put x 1
+put x 2
+put x 3
+get x
+delete x
+get x
