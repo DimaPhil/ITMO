@@ -293,7 +293,7 @@ big_integer& big_integer::operator /= (big_integer const& rhs)
   {
     ll quot = (digits[n + j] * base + digits[n + j - 1]) / r.digits[n - 1];
     result.digits[j] = std::min(quot, (ll)base - 1);
-    *this -= (r << (j * blen)) * result.digits[j];
+    *this -= (r << (j * blen)) * big_integer(result.digits[j]);
     while (sign == -1)
     {
       --result.digits[j];
