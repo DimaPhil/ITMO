@@ -5,13 +5,14 @@
 #include <string>
 
 typedef long long ll;
+typedef unsigned int uint;
 
-const unsigned long long base = 1ULL << 32;
+const uint base = 4294967295U;
 const int blen = 32;
 
 struct big_integer {
     char sign;
-    std::vector <ll> digits;
+    std::vector <uint> digits;
  
     big_integer();
     big_integer(big_integer const& other);

@@ -12,21 +12,12 @@
 const big_integer ZERO = big_integer(0);
 const big_integer ONE = big_integer(1);
 
-void __delete_zeroes(big_integer& r)
+static void __delete_zeroes(big_integer& r)
 {
   while (r.digits.size() > 1 && !r.digits.back())
     r.digits.pop_back();
   if (!r.digits.back())
     r.sign = 0;
-}
-
-big_integer tilda(big_integer const& rhs)
-{
-  big_integer r = big_integer(rhs);
-  for (size_t i = 0; i < r.digits.size(); ++i)
-    r.digits[i] = ~(unsigned int)r.digits[i];
-  __delete_zeroes(r);
-  return r;
 }
 
 /* Constructors */
@@ -51,14 +42,16 @@ big_integer::big_integer(int a)
     return;
   }
   sign = a > 0 ? 1 : (!a ? 0 : -1);
-  a = abs(a);
+  if (a < 0)
+    a = -a;
 
-  ll power = 1, num = 0;
+  ll power = 1;
+  uint num = 0;
   while (a) 
   {
     num += power * (a & 1);
     a >>= 1;
-    if ((power <<= 1) == (ll)base)
+    if ((power <<= 1) == (ll)base + 1)
       power = 1, digits.push_back(num), num = 0;
   }
   if (num)
@@ -77,12 +70,13 @@ big_integer::big_integer(long long a)
   if (a < 0)
     a = -a;
 
-  ll power = 1, num = 0;
+  ll power = 1;
+  uint num = 0;
   while (a) 
   {
     num += power * (a & 1);
     a >>= 1;
-    if ((power <<= 1) == (ll)base)
+    if ((power <<= 1) == (ll)base + 1)
       power = 1, digits.push_back(num), num = 0;
   }
   if (num)
@@ -100,9 +94,9 @@ big_integer::big_integer(std::string const& str)
 
   big_integer rs[10];
   for (int i = 0; i < 10; ++i)
-    rs[i] = big_integer(i);
+    rs[i] = i;
   bool is_zero = true;
-  *this = big_integer(0);
+  *this = ZERO;
   for (size_t i = start_index; i < str.size(); ++i) 
   {
     if (!isdigit(str[i]))
@@ -156,9 +150,12 @@ big_integer& big_integer::operator += (big_integer const& rhs)
       if (i == digits.size())
         digits.push_back(0);
       ll rdigit = (i < rhs.digits.size() ? rhs.digits[i] : 0);
-      carry = (digits[i] += rdigit + carry) >= (ll)base;
+      ll current = digits[i] + rdigit + carry;
+      carry = current > (ll)base;
       if (carry)
-        digits[i] -= base;
+        digits[i] = current - base;
+      else
+        digits[i] = current;
     }
   } 
   else 
@@ -205,9 +202,12 @@ big_integer& big_integer::operator -= (big_integer const& rhs)
       for (size_t i = 0; i < rhs.digits.size() || carry; ++i)
       {
         ll rdigit = (i < rhs.digits.size() ? rhs.digits[i] : 0);
-        carry = (digits[i] -= carry + rdigit) < 0;
+        ll current = digits[i] - rdigit - carry;
+        carry = current < 0;
         if (carry)
-          digits[i] += base;
+          digits[i] = current + base;
+        else
+          digits[i] = current;
       }
       __delete_zeroes(*this);
     }                      
@@ -222,9 +222,12 @@ big_integer& big_integer::operator -= (big_integer const& rhs)
       for (size_t i = 0; i < rhs.digits.size() || carry; ++i)
       {
         ll rdigit = (i < rhs.digits.size() ? rhs.digits[i] : 0);
-        carry = (digits[i] -= carry + rdigit) < 0;
+        ll current = digits[i] - rdigit - carry;
+        carry = current < 0;
         if (carry)
-          digits[i] += base;
+          digits[i] = current + base;
+        else
+          digits[i] = current;
       }
       __delete_zeroes(*this);
     }
@@ -255,15 +258,15 @@ big_integer& big_integer::operator *= (big_integer const& rhs)
     return *this = ZERO;
   sign = sign != rhs.sign ? -1 : 1;
 
-  std::vector <unsigned long long> ans(digits.size() + rhs.digits.size());
+  std::vector <uint> ans(digits.size() + rhs.digits.size());
   for (size_t i = 0; i < digits.size(); ++i) 
   {
-    unsigned long long carry = 0;
+    uint carry = 0;
     for (size_t j = 0; j < rhs.digits.size() || carry; ++j)
     {
-      ll rdigit = (j < rhs.digits.size() ? rhs.digits[j] : 0);
-      unsigned long long current = ans[i + j] + (unsigned long long)digits[i] * rdigit + carry;
-      ans[i + j] = current & (base - 1);
+      uint rdigit = (j < rhs.digits.size() ? rhs.digits[j] : 0);
+      unsigned long long current = ans[i + j] + 1ULL * digits[i] * rdigit + carry;
+      ans[i + j] = current & (1ULL * base);
       carry = current >> blen;
     }
   }
@@ -296,6 +299,7 @@ big_integer& big_integer::operator /= (big_integer const& rhs)
     throw std::runtime_error("Division by zero!");
   if (!sign)
     return *this = ZERO;
+
   big_integer r = big_integer(rhs);
   char need_sign = (r.sign * sign == -1) ? -1 : 1;
   sign = 1;
@@ -305,9 +309,9 @@ big_integer& big_integer::operator /= (big_integer const& rhs)
 
   int n = r.digits.size();
   int m = digits.size() - n;
-  if (r.digits[n - 1] < (ll)(base >> 1))
+  if (r.digits[n - 1] <= (base >> 1))
   {
-    long long tmp = base / (r.digits[n - 1] + 1);
+    ll tmp = (1LL * base + 1) / (r.digits[n - 1] + 1);
     *this *= tmp;
     r *= tmp;
     n = r.digits.size();
@@ -328,17 +332,19 @@ big_integer& big_integer::operator /= (big_integer const& rhs)
     if ((int)digits.size() <= n + j)
       break;
     big_integer y = r << (j * blen);
-    unsigned long long quot = ((unsigned long long)digits[n + j] * base + 1ULL * digits[n + j - 1]) / r.digits[n - 1];
-    result.digits[j] = std::min(quot, (unsigned long long)base - 1);
 
-    big_integer T = big_integer(result.digits[j]);
-    *this -= y * T;
+    unsigned long long quot = (1ULL * digits[n + j] * (1ULL * base + 1) + digits[n + j - 1]) / r.digits[n - 1];
+    unsigned long long res0 = std::min(quot, 1ULL * base);
+    ll res = res0;
+
+    *this -= y * res;
       
     while (*this < 0)
     {
       *this += y;
-      --result.digits[j];
+      --res;
     }
+    result.digits[j] = res;
   }
 
   result.sign = need_sign;
@@ -363,8 +369,6 @@ big_integer& big_integer::operator /= (big_integer const& rhs)
 
 big_integer& big_integer::operator %= (big_integer const& rhs) 
 {
-  if (!rhs.sign)
-    throw std::runtime_error("Division by zero!");
   if (!sign)
     return *this;
 
@@ -387,18 +391,15 @@ big_integer& big_integer::operator &= (big_integer const& rhs)
   while (digits.size() > r.digits.size())
     r.digits.push_back(0);
 
-  std::cout << *this << '\n';
-  std::cout << tilda(*this) << '\n';
-  if (sign == -1)
-    *this = (tilda(*this))++;
-  std::cout << *this << '\n';
-  if (r.sign == -1)
-    r = (tilda(r))++;
+  //if (sign == -1)
+  //  *this = (tilda(*this))++;
+  //if (r.sign == -1)
+  //  r = (tilda(r))++;
 
   for (size_t i = 0; i < digits.size(); ++i)
     digits[i] &= r.digits[i];
-  if (digits.back() >= (ll)(base >> 1))
-    *this = tilda((*this)--);
+  //if (digits.back() >= (ll)(base >> 1))
+  //  *this = tilda((*this)--);
 
   __delete_zeroes(*this);
   return *this;
@@ -446,14 +447,17 @@ big_integer& big_integer::operator <<= (int rhs)
     throw std::runtime_error("Cannot shift to negative value");
 
   div_t result = div(rhs, blen);
-  int carry = 0;
-  for (size_t i = 0; i < digits.size() || carry; ++i)
+  if (result.rem)
   {
-    if (i == digits.size())
-      digits.push_back(0);
-    ll current = (digits[i] << result.rem) + carry;
-    digits[i] = current & (base - 1);
-    carry = current >> blen;
+    ll carry = 0;
+    for (size_t i = 0; i < digits.size() || carry; ++i)
+    {
+      if (i == digits.size())
+        digits.push_back(0);
+      ll current = ((1LL * digits[i]) << result.rem) + carry;
+      digits[i] = current & (1LL * base);
+      carry = current >> blen;
+    }
   }
 
   int new_size = digits.size() + result.quot;
@@ -481,12 +485,17 @@ big_integer& big_integer::operator >>= (int rhs)
     digits[i] = 0;
   digits.resize(new_size);
 
-  int carry = 0;
-  for (int i = (int)digits.size() - 1; i >= 0; --i)
+  if (result.rem)
   {
-    ll current = (digits[i] >> result.rem) + (carry << (blen - result.rem));
-    carry = digits[i] - ((digits[i] >> result.rem) << result.rem);
-    digits[i] = current & (base - 1);
+    ll carry = 0;
+    int power = blen - result.rem;
+    for (int i = (int)digits.size() - 1; i >= 0; --i)
+    {
+      ll shl = (1LL * digits[i]) >> result.rem;
+      ll current = shl + (carry << power);
+      carry = digits[i] - (shl << result.rem);
+      digits[i] = current & (1LL * base);
+    }
   }
   
   __delete_zeroes(*this);
@@ -510,7 +519,9 @@ big_integer big_integer::operator + () const
 big_integer big_integer::operator ~ () const
 {
   big_integer r = big_integer(*this);
-  return tilda(r);
+  for (size_t i = 0; i < digits.size(); i++)
+    r.digits[i] = ~r.digits[i];
+  return r;
 }
 
 /* Increment operators (++) */
@@ -683,6 +694,7 @@ std::string to_string(big_integer const& a)
   while (b.sign)
   {
     big_integer last_digit = b % 10;
+    //std::cout << last_digit.digits[0] << '\n';
     number += char('0' + last_digit.digits[0]);
     b /= 10;
   }
