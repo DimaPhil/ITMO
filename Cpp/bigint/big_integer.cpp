@@ -36,6 +36,11 @@ big_integer::big_integer(big_integer const& other)
 big_integer::big_integer(unsigned int a) 
 {
   digits.clear();
+  if (!a) {
+    sign = 0;
+    digits.push_back(0);
+    return;
+  }
   sign = 1;
   digits.push_back(a);
 }
@@ -65,18 +70,9 @@ big_integer::big_integer(long long a)
   sign = a > 0 ? 1 : (!a ? 0 : -1);
   if (a < 0)
     a = -a;
-
-  ll power = 1;
-  uint num = 0;
-  while (a) 
-  {
-    num += power * (a & 1);
-    a >>= 1;
-    if ((power <<= 1) == (ll)base + 1)
-      power = 1, digits.push_back(num), num = 0;
-  }
-  if (num)
-    digits.push_back(num);
+  digits.push_back(a & (1LL * base));
+  digits.push_back(a >> blen);
+  __delete_zeroes(*this);
 }
 
 big_integer::big_integer(std::string const& str) 
