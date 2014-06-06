@@ -33,6 +33,13 @@ big_integer::big_integer(big_integer const& other)
   digits = other.digits;
 }
 
+big_integer::big_integer(unsigned int a) 
+{
+  digits.clear();
+  sign = 1;
+  digits.push_back(a);
+}
+
 big_integer::big_integer(int a) 
 {
   digits.clear();
@@ -44,18 +51,7 @@ big_integer::big_integer(int a)
   sign = a > 0 ? 1 : (!a ? 0 : -1);
   if (a < 0)
     a = -a;
-
-  ll power = 1;
-  uint num = 0;
-  while (a) 
-  {
-    num += power * (a & 1);
-    a >>= 1;
-    if ((power <<= 1) == (ll)base + 1)
-      power = 1, digits.push_back(num), num = 0;
-  }
-  if (num)
-    digits.push_back(num);
+  digits.push_back(a);
 }
 
 big_integer::big_integer(long long a) 
@@ -153,7 +149,7 @@ big_integer& big_integer::operator += (big_integer const& rhs)
       ll current = digits[i] + rdigit + carry;
       carry = current > (ll)base;
       if (carry)
-        digits[i] = current - base;
+        digits[i] = current - base - 1;
       else
         digits[i] = current;
     }
@@ -205,7 +201,7 @@ big_integer& big_integer::operator -= (big_integer const& rhs)
         ll current = digits[i] - rdigit - carry;
         carry = current < 0;
         if (carry)
-          digits[i] = current + base;
+          digits[i] = current + base + 1;
         else
           digits[i] = current;
       }
@@ -225,7 +221,7 @@ big_integer& big_integer::operator -= (big_integer const& rhs)
         ll current = digits[i] - rdigit - carry;
         carry = current < 0;
         if (carry)
-          digits[i] = current + base;
+          digits[i] = current + base + 1;
         else
           digits[i] = current;
       }
@@ -333,13 +329,13 @@ big_integer& big_integer::operator /= (big_integer const& rhs)
       break;
     big_integer y = r << (j * blen);
 
-    unsigned long long quot = (1ULL * digits[n + j] * (1ULL * base + 1) + digits[n + j - 1]) / r.digits[n - 1];
-    unsigned long long res0 = std::min(quot, 1ULL * base);
-    ll res = res0;
+    unsigned long long quot = (digits[n + j] * (1ULL * base + 1) + digits[n + j - 1]) / r.digits[n - 1];
+    quot = std::min(quot, 1ULL * base);
+    uint res = quot;
 
     *this -= y * res;
       
-    while (*this < 0)
+    while (*this < ZERO)
     {
       *this += y;
       --res;
@@ -579,7 +575,7 @@ big_integer operator * (big_integer a, big_integer const& b)
 /*big_integer operator / (big_integer a, int const& b)
 {
   return a /= b;
-} */
+}*/
 
 big_integer operator / (big_integer a, big_integer const& b) 
 {
@@ -694,7 +690,6 @@ std::string to_string(big_integer const& a)
   while (b.sign)
   {
     big_integer last_digit = b % 10;
-    //std::cout << last_digit.digits[0] << '\n';
     number += char('0' + last_digit.digits[0]);
     b /= 10;
   }
