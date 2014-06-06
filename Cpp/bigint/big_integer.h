@@ -4,10 +4,10 @@
 #include <vector>
 #include <string>
 
-const int base = 1 << 30;
-const int blen = 30;
-
 typedef long long ll;
+
+const unsigned long long base = 1ULL << 32;
+const int blen = 32;
 
 struct big_integer {
     char sign;
@@ -16,6 +16,7 @@ struct big_integer {
     big_integer();
     big_integer(big_integer const& other);
     big_integer(int a);
+    big_integer(long long a);
     explicit big_integer(std::string const& str);
     ~big_integer();
 
@@ -23,7 +24,7 @@ struct big_integer {
 
     big_integer& operator += (big_integer const& rhs);
     big_integer& operator -= (big_integer const& rhs);
-    big_integer& operator *= (int const& rhs);
+    big_integer& operator *= (unsigned long long const& rhs);
     big_integer& operator *= (big_integer const& rhs);
     big_integer& operator /= (int const& rhs); 
     big_integer& operator /= (big_integer const& rhs);

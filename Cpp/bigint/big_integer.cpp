@@ -53,12 +53,36 @@ big_integer::big_integer(int a)
   sign = a > 0 ? 1 : (!a ? 0 : -1);
   a = abs(a);
 
-  int power = 1, num = 0;
+  ll power = 1, num = 0;
   while (a) 
   {
     num += power * (a & 1);
     a >>= 1;
-    if ((power <<= 1) == base)
+    if ((power <<= 1) == (ll)base)
+      power = 1, digits.push_back(num), num = 0;
+  }
+  if (num)
+    digits.push_back(num);
+}
+
+big_integer::big_integer(long long a) 
+{
+  digits.clear();
+  if (!a) {
+    sign = 0;
+    digits.push_back(0);
+    return;
+  }
+  sign = a > 0 ? 1 : (!a ? 0 : -1);
+  if (a < 0)
+    a = -a;
+
+  ll power = 1, num = 0;
+  while (a) 
+  {
+    num += power * (a & 1);
+    a >>= 1;
+    if ((power <<= 1) == (ll)base)
       power = 1, digits.push_back(num), num = 0;
   }
   if (num)
@@ -131,8 +155,8 @@ big_integer& big_integer::operator += (big_integer const& rhs)
     {
       if (i == digits.size())
         digits.push_back(0);
-      int rdigit = (i < rhs.digits.size() ? rhs.digits[i] : 0);
-      carry = (digits[i] += rdigit + carry) >= base;
+      ll rdigit = (i < rhs.digits.size() ? rhs.digits[i] : 0);
+      carry = (digits[i] += rdigit + carry) >= (ll)base;
       if (carry)
         digits[i] -= base;
     }
@@ -148,6 +172,7 @@ big_integer& big_integer::operator += (big_integer const& rhs)
       *this = rhs - (*this);
   }
 
+  __delete_zeroes(*this);
   return *this;
 }
 
@@ -179,7 +204,7 @@ big_integer& big_integer::operator -= (big_integer const& rhs)
       int carry = 0;
       for (size_t i = 0; i < rhs.digits.size() || carry; ++i)
       {
-        int rdigit = (i < rhs.digits.size() ? rhs.digits[i] : 0);
+        ll rdigit = (i < rhs.digits.size() ? rhs.digits[i] : 0);
         carry = (digits[i] -= carry + rdigit) < 0;
         if (carry)
           digits[i] += base;
@@ -196,7 +221,7 @@ big_integer& big_integer::operator -= (big_integer const& rhs)
       int carry = 0;
       for (size_t i = 0; i < rhs.digits.size() || carry; ++i)
       {
-        int rdigit = (i < rhs.digits.size() ? rhs.digits[i] : 0);
+        ll rdigit = (i < rhs.digits.size() ? rhs.digits[i] : 0);
         carry = (digits[i] -= carry + rdigit) < 0;
         if (carry)
           digits[i] += base;
@@ -208,14 +233,14 @@ big_integer& big_integer::operator -= (big_integer const& rhs)
   return *this;
 } 
 
-big_integer& big_integer::operator *= (int const& rhs) 
+big_integer& big_integer::operator *= (unsigned long long const& rhs) 
 {
-  int carry = 0;
+  unsigned long long carry = 0;
   for (size_t i = 0; i < digits.size() || carry; ++i)
   {
     if (i == digits.size())
       digits.push_back(0);
-    ll current = carry + 1ll * digits[i] * rhs;
+    unsigned long long current = carry + (unsigned long long)digits[i] * rhs;
     digits[i] = current & (base - 1);
     carry = current >> blen;
   }
@@ -228,22 +253,24 @@ big_integer& big_integer::operator *= (big_integer const& rhs)
 {
   if (!sign || !rhs.sign)
     return *this = ZERO;
-  big_integer r = ZERO;
-  r.sign = sign != rhs.sign ? -1 : 1;
+  sign = sign != rhs.sign ? -1 : 1;
 
-  r.digits.resize(digits.size() + rhs.digits.size());
+  std::vector <unsigned long long> ans(digits.size() + rhs.digits.size());
   for (size_t i = 0; i < digits.size(); ++i)
     for (size_t j = 0; j < rhs.digits.size(); ++j)
-      r.digits[i + j] += digits[i] * rhs.digits[j];
-  for (size_t i = 0; i < r.digits.size(); i++)
-    if (r.digits[i] >= base)
+      ans[i + j] += (unsigned long long)digits[i] * rhs.digits[j];
+  for (size_t i = 0; i < ans.size(); i++)
+    if (ans[i] >= base)
     {
-      r.digits[i + 1] += r.digits[i] >> blen;
-      r.digits[i] &= (base - 1);
+      ans[i + 1] += ans[i] >> blen;
+      ans[i] &= (base - 1);
     }
 
-  __delete_zeroes(r);
-  return *this = r;
+  digits.resize(ans.size());
+  for (size_t i = 0; i < ans.size(); i++)
+    digits[i] = ans[i];
+  __delete_zeroes(*this);
+  return *this;
 }
 
 big_integer& big_integer::operator /= (int const& rhs) 
@@ -274,30 +301,41 @@ big_integer& big_integer::operator /= (big_integer const& rhs)
   if ((*this) < r)
     return *this = ZERO;
 
-  int power = 0;
-  while (r.digits.back() < (base >> 1))
-    *this <<= 1, r <<= 1, ++power;
-
   int n = r.digits.size();
   int m = digits.size() - n;
+  if (r.digits[n - 1] < (ll)(base >> 1))
+  {
+    long long tmp = base / (r.digits[n - 1] + 1);
+    *this *= tmp;
+    r *= tmp;
+    n = r.digits.size();
+    m = digits.size() - n;
+  }
+
   big_integer result = ZERO;
-  for (int i = 0; i < m; i++)
-    result.digits.push_back(0);
-  result.digits[m] = 0;
-  if (*this >= (r << (m * blen)))
+  result.digits.resize(m + 1);
+  big_integer y = r << (m * blen);
+  if (*this >= y)
   {
     result.digits[m] = 1;
-    *this -= (r << (m * blen));
+    *this -= y;
   }
+
   for (int j = m - 1; j >= 0; j--)
   {
-    ll quot = (digits[n + j] * base + digits[n + j - 1]) / r.digits[n - 1];
-    result.digits[j] = std::min(quot, (ll)base - 1);
-    *this -= (r << (j * blen)) * big_integer(result.digits[j]);
-    while (sign == -1)
+    if ((int)digits.size() <= n + j)
+      break;
+    big_integer y = r << (j * blen);
+    unsigned long long quot = ((unsigned long long)digits[n + j] * base + 1ULL * digits[n + j - 1]) / r.digits[n - 1];
+    result.digits[j] = std::min(quot, (unsigned long long)base - 1);
+
+    big_integer T = big_integer(result.digits[j]);
+    *this -= y * T;
+      
+    while (*this < 0)
     {
+      *this += y;
       --result.digits[j];
-      *this += (r << (j * blen));
     }
   }
 
@@ -335,7 +373,7 @@ big_integer& big_integer::operator %= (big_integer const& rhs)
     return *this;
 
   int power = 0;
-  while (r.digits.back() < (base >> 1))
+  while (r.digits.back() < (ll)(base >> 1))
     *this <<= 1, r <<= 1, ++power;
 
   int n = r.digits.size();
@@ -390,7 +428,7 @@ big_integer& big_integer::operator &= (big_integer const& rhs)
 
   for (size_t i = 0; i < digits.size(); ++i)
     digits[i] &= r.digits[i];
-  if (digits.back() >= (base >> 1))
+  if (digits.back() >= (ll)(base >> 1))
     *this = tilda((*this)--);
 
   __delete_zeroes(*this);
