@@ -367,17 +367,9 @@ big_integer& big_integer::operator %= (big_integer const& rhs)
     throw std::runtime_error("Division by zero!");
   if (!sign)
     return *this;
-  big_integer r = big_integer(rhs);
-  char need_sign = (r.sign * sign == -1) ? -1 : 1;
-  sign = 1;
-  r.sign = 1;
-  if ((*this) < r) {
-    sign = need_sign;
-    return *this;
-  }
 
-  big_integer quotient = *this / r;
-  big_integer remainder = *this - quotient * r;
+  big_integer quotient = *this / rhs;
+  big_integer remainder = *this - quotient * rhs;
   __delete_zeroes(remainder);
   return *this = remainder;
 }                         
