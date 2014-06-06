@@ -24,11 +24,11 @@ struct big_integer {
 
     big_integer& operator += (big_integer const& rhs);
     big_integer& operator -= (big_integer const& rhs);
-    big_integer& operator *= (unsigned long long const& rhs);
+    //big_integer& operator *= (unsigned long long const& rhs);
     big_integer& operator *= (big_integer const& rhs);
-    big_integer& operator /= (int const& rhs); 
+    //big_integer& operator /= (int const& rhs); 
     big_integer& operator /= (big_integer const& rhs);
-    int operator %= (int const& rhs); 
+    //int operator %= (int const& rhs); 
     big_integer& operator %= (big_integer const& rhs);
 
     big_integer& operator &= (big_integer const& rhs);
@@ -60,11 +60,11 @@ struct big_integer {
 
 big_integer operator + (big_integer a, big_integer const& b);
 big_integer operator - (big_integer a, big_integer const& b);
-big_integer operator * (big_integer a, int const& b);
+//big_integer operator * (big_integer a, int const& b);
 big_integer operator * (big_integer a, big_integer const& b);
-big_integer operator / (big_integer a, int const& b);
+//big_integer operator / (big_integer a, int const& b);
 big_integer operator / (big_integer a, big_integer const& b);
-int operator % (big_integer a, int const& b);
+//int operator % (big_integer a, int const& b);
 big_integer operator % (big_integer a, big_integer const& b);
 
 big_integer operator & (big_integer a, big_integer const& b);

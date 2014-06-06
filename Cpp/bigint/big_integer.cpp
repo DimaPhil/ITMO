@@ -233,7 +233,7 @@ big_integer& big_integer::operator -= (big_integer const& rhs)
   return *this;
 } 
 
-big_integer& big_integer::operator *= (unsigned long long const& rhs) 
+/*big_integer& big_integer::operator *= (unsigned long long const& rhs) 
 {
   unsigned long long carry = 0;
   for (size_t i = 0; i < digits.size() || carry; ++i)
@@ -247,7 +247,7 @@ big_integer& big_integer::operator *= (unsigned long long const& rhs)
 
   __delete_zeroes(*this);
   return *this;
-}
+} */
 
 big_integer& big_integer::operator *= (big_integer const& rhs) 
 {
@@ -275,12 +275,12 @@ big_integer& big_integer::operator *= (big_integer const& rhs)
   return *this;
 }
 
-big_integer& big_integer::operator /= (int const& rhs) 
+/*big_integer& big_integer::operator /= (int const& rhs) 
 {
   int carry = 0;
   for (int i = (int)digits.size() - 1; i >= 0; --i)
   {
-    ll current = digits[i] + 1ll * carry * base;
+    unsigned long long current = digits[i] + 1ULL * carry * base;
     lldiv_t result = lldiv(current, rhs);
     digits[i] = result.quot;
     carry = result.rem;
@@ -288,7 +288,7 @@ big_integer& big_integer::operator /= (int const& rhs)
 
   __delete_zeroes(*this);
   return *this;
-}
+} */
 
 big_integer& big_integer::operator /= (big_integer const& rhs) 
 {
@@ -346,12 +346,12 @@ big_integer& big_integer::operator /= (big_integer const& rhs)
   return *this = result;
 }
 
-int big_integer::operator %= (int const& rhs) 
+/*int big_integer::operator %= (int const& rhs) 
 {
   int carry = 0;
   for (int i = (int)digits.size() - 1; i >= 0; --i)
   {
-    ll current = digits[i] + 1ll * carry * base;
+    unsigned long long current = digits[i] + 1ULL * carry * base;
     lldiv_t result = lldiv(current, rhs);
     digits[i] = result.quot;
     carry = result.rem;
@@ -359,7 +359,7 @@ int big_integer::operator %= (int const& rhs)
 
   __delete_zeroes(*this);
   return carry;
-}
+} */
 
 big_integer& big_integer::operator %= (big_integer const& rhs) 
 {
@@ -555,30 +555,30 @@ big_integer operator - (big_integer a, big_integer const& b)
   return a -= b;
 } 
 
-big_integer operator * (big_integer a, int const& b)
+/*big_integer operator * (big_integer a, int const& b)
 {
   return a *= b;
-}
+} */
 
 big_integer operator * (big_integer a, big_integer const& b) 
 {
   return a *= b;
 } 
 
-big_integer operator / (big_integer a, int const& b)
+/*big_integer operator / (big_integer a, int const& b)
 {
   return a /= b;
-}
+} */
 
 big_integer operator / (big_integer a, big_integer const& b) 
 {
   return a /= b;
 } 
 
-int operator % (big_integer a, int const& b)
+/*int operator % (big_integer a, int const& b)
 {
   return a %= b;
-}
+} */
 
 big_integer operator % (big_integer a, big_integer const& b) 
 {
@@ -682,8 +682,8 @@ std::string to_string(big_integer const& a)
   big_integer b = big_integer(a);
   while (b.sign)
   {
-    int last_digit = b % 10;
-    number += char('0' + last_digit);
+    big_integer last_digit = b % 10;
+    number += char('0' + last_digit.digits[0]);
     b /= 10;
   }
   if (sign == -1)
