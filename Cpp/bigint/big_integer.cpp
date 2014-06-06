@@ -323,11 +323,15 @@ big_integer& big_integer::operator /= (big_integer const& rhs)
     *this -= y;
   }
 
-  for (int j = m - 1; j >= 0; j--)
+  for (int j = m - 1; j >= 0; --j)
   {
     if ((int)digits.size() <= n + j)
       break;
-    big_integer y = r << (j * blen);
+
+    int len = y.digits.size();
+    for (size_t i = r.digits.size(); i > 0; --i)
+      y.digits[len - i - 1] = y.digits[len - i];	
+    y.digits.pop_back();
 
     unsigned long long quot = (digits[n + j] * (1ULL * base + 1) + digits[n + j - 1]) / r.digits[n - 1];
     quot = std::min(quot, 1ULL * base);
