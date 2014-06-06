@@ -368,10 +368,9 @@ big_integer& big_integer::operator %= (big_integer const& rhs)
   if (!sign)
     return *this;
 
-  big_integer quotient = *this / rhs;
-  big_integer remainder = *this - quotient * rhs;
-  __delete_zeroes(remainder);
-  return *this = remainder;
+  *this -= (*this / rhs) * rhs;
+  __delete_zeroes(*this);
+  return *this;
 }                         
 
 /* Binary operators (&=, |=, ^=) */
@@ -687,11 +686,12 @@ std::string to_string(big_integer const& a)
   std::string number = "";
   char sign = a.sign;
   big_integer b = big_integer(a);
+  big_integer divisor = 10;
   while (b.sign)
   {
-    big_integer last_digit = b % 10;
+    big_integer last_digit = b % divisor;
     number += char('0' + last_digit.digits[0]);
-    b /= 10;
+    b /= divisor;
   }
   if (sign == -1)
     number += '-';
