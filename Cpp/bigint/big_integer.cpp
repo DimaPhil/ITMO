@@ -366,46 +366,21 @@ big_integer& big_integer::operator %= (big_integer const& rhs)
   if (!rhs.sign)
     throw std::runtime_error("Division by zero!");
   if (!sign)
-    return *this = ZERO;
+    return *this;
   big_integer r = big_integer(rhs);
   char need_sign = (r.sign * sign == -1) ? -1 : 1;
   sign = 1;
   r.sign = 1;
-  if ((*this) < r)
+  if ((*this) < r) {
+    sign = need_sign;
     return *this;
-
-  int power = 0;
-  while (r.digits.back() < (ll)(base >> 1))
-    *this <<= 1, r <<= 1, ++power;
-
-  int n = r.digits.size();
-  int m = digits.size() - n;
-  big_integer result = ZERO;
-  for (int i = 0; i < m; i++)
-    result.digits.push_back(0);
-  result.digits[m] = 0;
-  if (*this >= (r << (m * blen)))
-  {
-    result.digits[m] = 1;
-    *this -= (r << (m * blen));
-  }
-  for (int j = m - 1; j >= 0; j--)
-  {
-    ll quot = (digits[n + j] * base + digits[n + j - 1]) / r.digits[n - 1];
-    result.digits[j] = std::min(quot, (ll)base - 1);
-    *this -= (r << (j * blen)) * result.digits[j];
-    while (sign == -1)
-    {
-      --result.digits[j];
-      *this += (r << (j * blen));
-    }
   }
 
-  *this >>= power;
-  sign = need_sign;
-  __delete_zeroes(*this);
-  return *this;
-}
+  big_integer quotient = *this / r;
+  big_integer remainder = *this - quotient * r;
+  __delete_zeroes(remainder);
+  return *this = remainder;
+}                         
 
 /* Binary operators (&=, |=, ^=) */
 
