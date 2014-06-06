@@ -256,15 +256,17 @@ big_integer& big_integer::operator *= (big_integer const& rhs)
   sign = sign != rhs.sign ? -1 : 1;
 
   std::vector <unsigned long long> ans(digits.size() + rhs.digits.size());
-  for (size_t i = 0; i < digits.size(); ++i)
-    for (size_t j = 0; j < rhs.digits.size(); ++j)
-      ans[i + j] += (unsigned long long)digits[i] * rhs.digits[j];
-  for (size_t i = 0; i < ans.size(); i++)
-    if (ans[i] >= base)
+  for (size_t i = 0; i < digits.size(); ++i) 
+  {
+    unsigned long long carry = 0;
+    for (size_t j = 0; j < rhs.digits.size() || carry; ++j)
     {
-      ans[i + 1] += ans[i] >> blen;
-      ans[i] &= (base - 1);
+      ll rdigit = (j < rhs.digits.size() ? rhs.digits[j] : 0);
+      unsigned long long current = ans[i + j] + (unsigned long long)digits[i] * rdigit + carry;
+      ans[i + j] = current & (base - 1);
+      carry = current >> blen;
     }
+  }
 
   digits.resize(ans.size());
   for (size_t i = 0; i < ans.size(); i++)
