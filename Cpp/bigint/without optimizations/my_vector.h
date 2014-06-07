@@ -18,7 +18,7 @@ struct my_vector
     void pop_back();
     void resize(int size);
     
-    uint size() const;
+    int size() const;
     uint const& operator [] (int i) const;
     uint& operator [] (int i);
 
