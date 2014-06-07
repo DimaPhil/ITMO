@@ -7,13 +7,7 @@
 typedef long long ll;
 typedef unsigned int uint;
 
-const uint base = 4294967295U;
-const int blen = 32;
-
 struct big_integer {
-    char sign;
-    std::vector <uint> digits;
- 
     big_integer();
     big_integer(big_integer const& other);
     big_integer(unsigned int a);
@@ -58,6 +52,13 @@ struct big_integer {
     friend bool operator >= (big_integer const& a, big_integer const& b);
 
     friend std::string to_string(big_integer const& a);
+
+    char sign;
+    std::vector <uint> digits;
+    void __delete_zeroes();
+    void __additional_code();
+    static const uint base = 4294967295U;
+    static const int blen = 32;
 };
 
 big_integer operator + (big_integer a, big_integer const& b);
