@@ -118,7 +118,7 @@ int my_vector::size() const
   return (*vect).size();
 } 
 
-uint const& my_vector::operator[] (int i) const 
+uint const& my_vector::operator [] (int i) const 
 {  
   if (msk)
     return *n;
@@ -132,7 +132,7 @@ uint& my_vector::operator[] (int i)
   return (*vect)[i];
 }
 
-my_vector& my_vector::operator=(my_vector const& other) 
+my_vector& my_vector::operator = (my_vector const& other) 
 {
   make_copy();
   if (other.msk) 
@@ -179,7 +179,7 @@ uint const& my_vector::back() const
   return (*vect).back();
 }
 
-bool operator==(my_vector const& a, my_vector const& b) 
+bool operator == (my_vector const& a, my_vector const& b) 
 {
   if (!a.msk && !b.msk)
     return *(a.vect) == *(b.vect);
