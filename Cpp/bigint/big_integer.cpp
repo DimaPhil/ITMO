@@ -255,9 +255,9 @@ big_integer& big_integer::operator *= (big_integer const& rhs)
 {
   if (!sign || !rhs.sign)
     return *this = ZERO;
-  sign = sign != rhs.sign ? -1 : 1;
+  sign = ((sign == -1) ^ (rhs.sign == -1)) ? -1 : 1;
 
-  std::vector <uint> ans(digits.size() + rhs.digits.size());
+  my_vector ans(digits.size() + rhs.digits.size());
   for (size_t i = 0; i < digits.size(); ++i) 
   {
     uint carry = 0;
@@ -317,12 +317,11 @@ big_integer& big_integer::operator /= (big_integer const& rhs)
     m = digits.size() - n;
   }
 
-  big_integer result = ZERO;
-  result.digits.resize(m + 1);
+  my_vector result(m + 1);
   big_integer y = r << (m * blen);
   if (*this >= y)
   {
-    result.digits[m] = 1;
+    result[m] = 1;
     *this -= y;
   }
 
@@ -333,7 +332,7 @@ big_integer& big_integer::operator /= (big_integer const& rhs)
 
     int len = y.digits.size();
     for (size_t i = r.digits.size(); i > 0; --i)
-      y.digits[len - i - 1] = y.digits[len - i];	
+      y.digits[len - i - 1] = y.digits[len - i];  
     y.digits.pop_back();
 
     unsigned long long quot = (digits[n + j] * (1ULL * base + 1) + digits[n + j - 1]) / r.digits[n - 1];
@@ -347,12 +346,14 @@ big_integer& big_integer::operator /= (big_integer const& rhs)
       *this += y;
       --res;
     }
-    result.digits[j] = res;
+    result[j] = res;
   }
 
-  result.sign = need_sign;
-  result.__delete_zeroes();
-  return *this = result;
+  big_integer res;
+  res.sign = need_sign;
+  res.digits = result;
+  res.__delete_zeroes();
+  return *this = res;
 }
 
 /*int big_integer::operator %= (int const& rhs) 

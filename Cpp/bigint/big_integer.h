@@ -1,6 +1,7 @@
 #ifndef BIG_INTEGER_H
 #define BIG_INTEGER_H
 
+#include "my_vector.h"   
 #include <vector>
 #include <string>
 
@@ -54,7 +55,7 @@ struct big_integer {
     friend std::string to_string(big_integer const& a);
 
     char sign;
-    std::vector <uint> digits;
+    my_vector digits;
     void __delete_zeroes();
     void __additional_code();
     static const uint base = 4294967295U;
