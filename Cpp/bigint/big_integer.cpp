@@ -351,9 +351,8 @@ big_integer& big_integer::operator /= (big_integer const& rhs)
   }
 
   result.sign = need_sign;
-  *this = result;
-  __delete_zeroes();
-  return *this;
+  result.__delete_zeroes();
+  return *this = result;
 }
 
 /*int big_integer::operator %= (int const& rhs) 
@@ -526,6 +525,8 @@ big_integer& big_integer::operator >>= (int rhs)
   if (result.rem)
   {
     ll carry = 0;
+    if (sign == -1)
+      carry = base;
     ll BASE = base;
     int power = blen - result.rem;
     for (int i = (int)digits.size() - 1; i >= 0; --i)
@@ -561,8 +562,8 @@ big_integer big_integer::operator + () const
 big_integer big_integer::operator ~ () const
 {
   big_integer r = big_integer(*this);
-  for (size_t i = 0; i < digits.size(); i++)
-    r.digits[i] = ~r.digits[i];
+  r = -r - 1;
+  r.__delete_zeroes();
   return r;
 }
 
