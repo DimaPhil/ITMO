@@ -403,9 +403,9 @@ big_integer& big_integer::operator &= (big_integer const& rhs)
 
   for (size_t i = 0; i < digits.size(); ++i)
     digits[i] &= r.digits[i];
+  sign = need_sign;
   if (need_sign == -1)
     __additional_code();
-  sign = need_sign;
 
   __delete_zeroes();
   return *this;
@@ -431,9 +431,9 @@ big_integer& big_integer::operator |= (big_integer const& rhs)
 
   for (size_t i = 0; i < digits.size(); ++i)
     digits[i] |= r.digits[i];
+  sign = need_sign;
   if (need_sign == -1)
     __additional_code();
-  sign = need_sign;
 
   __delete_zeroes();
   return *this;
@@ -459,9 +459,9 @@ big_integer& big_integer::operator ^= (big_integer const& rhs)
 
   for (size_t i = 0; i < digits.size(); ++i)
     digits[i] ^= r.digits[i];
+  sign = need_sign;
   if (need_sign == -1)
     __additional_code();
-  sign = need_sign;
 
   __delete_zeroes();
   return *this;
