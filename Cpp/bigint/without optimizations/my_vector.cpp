@@ -111,10 +111,10 @@ void my_vector::clear()
   resize(0);
 }
 
-uint my_vector::size() const 
+int my_vector::size() const 
 {
   if (msk)
-    return uint((msk & 2) > 0);
+    return (msk & 2) > 0;
   return (*vect).size();
 } 
 

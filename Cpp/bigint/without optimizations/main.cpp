@@ -27,7 +27,6 @@ int main()
       random_shuffle(numbers.begin(), numbers.end());
       for (int i = 1; i < (int)numbers.size(); ++i)
         accumulator /= numbers[i];
-      //cout << accumulator << "\n" << numbers[0] << "\n\n";
       if (accumulator != numbers[0])
         cout << "Something went wrong :(\n";
     }

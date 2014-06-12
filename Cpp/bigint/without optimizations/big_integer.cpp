@@ -5,6 +5,7 @@
 #include <cctype>
 #include <cstring>
 #include <cstdlib>
+#include <cassert>
 #include <stdexcept>
 
 /* Private functions */
@@ -257,7 +258,7 @@ big_integer& big_integer::operator *= (big_integer const& rhs)
     return *this = ZERO;
   sign = ((sign == -1) ^ (rhs.sign == -1)) ? -1 : 1;
 
-  my_vector ans(digits.size() + rhs.digits.size());
+  std::vector <uint> ans(digits.size() + rhs.digits.size());
   for (size_t i = 0; i < digits.size(); ++i) 
   {
     uint carry = 0;
@@ -324,7 +325,7 @@ big_integer& big_integer::operator /= (big_integer const& rhs)
     m = digits.size() - n;
   }
 
-  my_vector result(m + 1);
+  std::vector <uint> result(m + 1);
   big_integer y = r << (m * blen);
   if (*this >= y)
   {
