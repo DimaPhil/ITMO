@@ -1,82 +1,91 @@
-#ifndef LIST_H_INCLUDED
-#define LIST_H_INCLUDED
+#ifndef LIST_H
+#define LIST_H
 
-struct list {
-    struct iterator;
-    struct const_iterator;
+struct list 
+{
+  struct iterator;
+  struct const_iterator;
     
-    list();
-    list(const int &value);
-    list(const list &l);
-    list& operator=(list l);
-    ~list();
-    void doCopy(const list &l);
-    bool empty() const;
-    void push_back(int value);
-    int& back();
-    const int& back() const;
-    void pop_back();
-    void push_front(int value);
-    int& front();
-    const int& front() const;
-    void pop_front();
-    iterator begin();
-    const_iterator begin() const;
-    iterator end();
-    const_iterator end() const;
-    void insert(iterator pos, int value); // insert before pos
-    void erase(iterator pos);
-    void splice(iterator pos, list &other, iterator first, iterator last);
+  list();
+  list(const int &value);
+  list(const list &l);
+  list& operator = (list l);
+  ~list();
+
+  bool empty() const;
+
+  void push_back(int value);
+  int& back();
+  const int& back() const;
+  void pop_back();
+  void push_front(int value);
+
+  int& front();
+  const int& front() const;
+  void pop_front();
+
+  iterator begin();
+  const_iterator begin() const;
+  iterator end();
+  const_iterator end() const;
+
+  void insert(iterator pos, int value);
+  void erase(iterator pos);
+  void splice(iterator pos, list &other, iterator first, iterator last);
     
-    void print();
-    friend void swap(list &a, list &b);
+  void print();
 private:
-    struct node;
-    node *_begin, *_end;
+  struct node;
+  node *pbegin, *pend;
+  
+  friend void swap(list &a, list &b);
     
-    void del();
+  void deleteList();
 };
 
-struct list::node {
-    int value;
-    node *prev, *next;
+struct list::node 
+{
+  int value;
+  node *prev, *next;
     
-    node();
-    node(int value);
-    node(int value, node *prev, node *next);
-    node(const node &n);
-    ~node();
-    node& operator= (const node &n);
+  node();
+  node(int value);
+  node(int value, node *prev, node *next);
+  node(const node &n);
+  ~node();
+
+  node& operator = (const node &n);
 };
 
-struct list::iterator {
-    iterator();
-    int& operator*() const;
-    iterator& operator++();
-    iterator operator++(int);
-    iterator& operator--();
-    iterator operator--(int);
-    
-    bool operator==(const iterator &a) const;
-    bool operator!=(const iterator &a) const;
+struct list::iterator 
+{
+  iterator();
+  int& operator * () const;
+  iterator& operator ++ ();
+  iterator operator ++ (int);
+  iterator& operator -- ();
+  iterator operator -- (int);
+  
+  bool operator == (const iterator &it) const;
+  bool operator != (const iterator &it) const;
 
-    node *cur;
-    iterator(node *cur);
+  node *now;
+  iterator(node *now);
 };
 
-struct list::const_iterator {
-    const_iterator();
-    int const& operator*() const;
-    const_iterator& operator++();
-    const_iterator operator++(int);
-    const_iterator& operator--();
-    const_iterator operator--(int);
+struct list::const_iterator 
+{
+  const_iterator();
+  int const& operator * () const;
+  const_iterator& operator ++ ();
+  const_iterator operator ++ (int);
+  const_iterator& operator -- ();
+  const_iterator operator -- (int);
     
-    bool operator==(const const_iterator &a) const;
-    bool operator!=(const const_iterator &a) const; 
-
-    node *cur;
-    const_iterator(node *cur);
+  bool operator == (const const_iterator &it) const;
+  bool operator != (const const_iterator &it) const; 
+  node *now;
+  const_iterator(node *now);
 };
 
-#endif // LIST_H_INCLUDED
+#endif // LIST_H

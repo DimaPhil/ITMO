@@ -3,213 +3,224 @@
 #include <iostream>
 
 list::list() {
-    _end = new node();
-    _end->next = _end;
-    _end->prev = _end;
-    _begin = _end;
+  pend = new node();
+  pend->next = pend;
+  pend->prev = pend;
+  pbegin = pend;
 }
 
 list::list(const int &value) {
-    _end = new node();
-    try {
-        _begin = new node();
-    } catch(...) {
-        delete _end;
-        throw "did'n create";
+  pend = new node();
+  try {
+    pbegin = new node();
+  } catch(...) {
+    delete pend;
+    throw;
+  }
+  pend->next = pend;
+  pend->prev = pbegin;
+  pbegin->next = pend;
+  pbegin->prev = pbegin;
+  pbegin->value = value;
+}
+
+void list::deleteList()
+{
+  std::vector<node*> nodes;
+  node *now = this->pbegin;
+  while (1)
+  {
+    nodes.push_back(now);
+    if (now == this->pend)
+      break;
+    now = now->next;
+  }
+  for (size_t i = 0; i < nodes.size(); i++)
+    delete nodes[i];
+}
+
+list::~list()
+{
+  this->deleteList();
+}
+
+list::list(const list &l)
+{
+  try 
+  {
+    this->pbegin = new node(*l.pbegin);
+    node *tmp1 = this->pbegin;
+    this->pend = tmp1;
+    tmp1->next = tmp1;
+    node *tmp2 = l.pbegin;
+    if (tmp2 == l.pend)
+      return;
+    tmp2 = tmp2->next;
+    while (1)
+    {
+      tmp1->next = new node(*tmp2);
+      tmp1->next->prev = tmp1;
+      tmp1 = tmp1->next;
+      this->pend = tmp1;
+      tmp1->next = tmp1;
+      if (tmp2 == l.pend)
+        break;
+      tmp2 = tmp2->next;
     }
-    _end->next = _end;
-    _end->prev = _begin;
-    _begin->next = _end;
-    _begin->prev = _begin;
-    _begin->value = value;
+  } catch (...) {
+    this->deleteList();
+    throw;
+  }
 }
 
-void list::doCopy(const list &l) {
-    this->_begin = new node(*l._begin);
-    node *cur1 = this->_begin;
-    this->_end = cur1;
-    cur1->next = cur1;
-    node *cur2 = l._begin;
-    if (cur2 == l._end) return;
-    cur2 = cur2->next;
-    while (true) {
-        cur1->next = new node(*cur2);
-        cur1->next->prev = cur1;
-        cur1 = cur1->next;
-        this->_end = cur1;
-        cur1->next = cur1;
-        if (cur2 == l._end) break;
-        cur2 = cur2->next;
-    }
-    if (*l.begin() == 3) {
-        throw "fail";
-    }  
+list& list::operator = (list l) 
+{
+  swap(l->pbegin, *this->pbegin);
+  swap(l->pend, *this->pend);
+  return *this;
 }
 
-list::list(const list &l) {
-    try {
-        doCopy(l);
-    } catch (...) {
-        del();
-        throw "didn't create";
-    }
+bool list::empty() const 
+{
+  return this->pbegin == this->pend;
 }
 
-void list::del() {
-    std::vector<node*> v;
-    node *cur = this->_begin;
-    while (true) {
-        v.push_back(cur);
-        if (cur == this->_end) break;
-        cur = cur->next;
-    }
-    for (int i = 0; i < (int)v.size(); i++) {
-        delete v[i];
-    }
+void list::push_back(int value) 
+{
+  if (empty()) 
+  {
+    this->pbegin = new node(value);
+    this->pend->prev = this->pbegin;
+    this->pbegin->next = this->pend;
+  } 
+  else
+  {
+    this->pend->prev->next = new node(value, this->pend->prev, this->pend);
+    this->pend->prev = this->pend->prev->next;
+  }
 }
 
-void list::print() {
-    std::vector<node*> v;
-    node *cur = this->_begin;
-    while (true) {
-        v.push_back(cur);
-        if (cur == this->_end) break;
-        cur = cur->next;
-    }
-    if (v.size() == 1) std::cout << "empty";
-    for (int i = 0; i < (int)v.size() - 1; i++) {
-        std::cout << v[i]->value << " ";
-    }
-    std::cout << std::endl;
+int& list::back() 
+{
+  return this->pend->prev->value;
 }
 
-list::~list() {
-    this->del();
+const int& list::back() const
+{
+  return this->pend->prev->value;
 }
 
-void swap(list &a, list &b) {
-    std::swap(a._begin, b._begin);
-    std::swap(a._end, b._end);
+void list::pop_back() 
+{
+  node *elem = this->pend->prev;
+  if (elem == this->pbegin) 
+  {
+    this->pend->prev = this->pend;
+    this->pbegin = this->pend;
+  } 
+  else 
+  {
+    this->pend->prev = this->pend->prev->prev;
+    this->pend->prev->next = this->pend;
+  }
+  delete elem;
 }
 
-list& list::operator=(list l) {
-    swap(l, *this);
-    return *this;
+void list::push_front(int value) 
+{
+  if (empty()) 
+  {
+    this->pbegin = new node(value);
+    this->pend->prev = this->pbegin;
+    this->pbegin->next = this->pend;
+  } 
+  else 
+  {
+    node *lastBegin = this->pbegin;
+    this->pbegin = new node(value);
+    this->pbegin->next = lastBegin;
+    lastBegin->prev = this->pbegin;
+  }
 }
 
-bool list::empty() const {
-    return this->_begin == this->_end;
+int& list::front() 
+{
+  return this->pbegin->value;
 }
 
-void list::push_back(int value) {
-    if (empty()) {
-        this->_begin = new node(value);
-        this->_end->prev = this->_begin;
-        this->_begin->next = this->_end;
-    } else {
-        this->_end->prev->next = new node(value, this->_end->prev, this->_end);
-        this->_end->prev = this->_end->prev->next;
-    }
+const int& list::front() const 
+{
+  return this->pbegin->value;
 }
 
-// list is not empty
-int& list::back() {
-    return this->_end->prev->value;
-}
-
-const int& list::back() const {
-    return this->_end->prev->value;
-}
-
-//list is not empty
-void list::pop_back() {
-    node *todel = this->_end->prev;
-    if (todel == this->_begin) {
-        this->_end->prev = this->_end;
-        this->_begin = this->_end;
-    } else {
-        this->_end->prev = this->_end->prev->prev;
-        this->_end->prev->next = this->_end;
-    }
-    delete todel;
-}
-
-void list::push_front(int value) {
-    if (empty()) {
-        this->_begin = new node(value);
-        this->_end->prev = this->_begin;
-        this->_begin->next = this->_end;
-    } else {
-        node *old = this->_begin;
-        this->_begin = new node(value);
-        this->_begin->next = old;
-        old->prev = this->_begin;
-    }
-}
-
-// list is not empty
-int& list::front() {
-    return this->_begin->value;
-}
-
-const int& list::front() const {
-    return this->_begin->value;
-}
-
-//list is not empty
 void list::pop_front() {
-    node *todel = this->_begin;
-    if (todel->next == this->_end) {
-        this->_end->prev = this->_end;
-        this->_begin = this->_end;
-    } else {
-        this->_begin = this->_begin->next;
-        this->_begin->prev = this->_begin;
-    }
-    delete todel;
+  node *elem = this->pbegin;
+  if (elem->next == this->pend) 
+  {
+    this->pend->prev = this->pend;
+    this->pbegin = this->pend;
+  } 
+  else 
+  {
+    this->pbegin = this->pbegin->next;
+    this->pbegin->prev = this->pbegin;
+  }
+  delete elem;
 }
 
 
-list::iterator list::begin() {
-    return list::iterator(this->_begin);
+list::iterator list::begin() 
+{
+  return list::iterator(this->pbegin);
 }
 
-list::const_iterator list::begin() const {
-    return list::const_iterator(this->_begin);
+list::const_iterator list::begin() const 
+{
+  return list::const_iterator(this->pbegin);
 }
 
-list::iterator list::end() {
-    return list::iterator(this->_end);
+list::iterator list::end() 
+{
+  return list::iterator(this->pend);
 }
 
-list::const_iterator list::end() const {
-    return list::const_iterator(this->_end);
+list::const_iterator list::end() const 
+{
+  return list::const_iterator(this->pend);
 }
 
-void list::insert(list::iterator pos, int value) {
-    node *nw = new node(value);
-    node *cur = pos.cur;
-    if (cur != this->_begin) {
-        nw->prev = cur->prev;
-        nw->next = cur;
-        cur->prev->next = nw;
-        cur->prev = nw;
-    } else {
-        this->_begin = nw;
-        nw->next = cur;
-        cur->prev = nw;
-    }
+void list::insert(list::iterator pos, int value)
+{
+  node *newNode = new node(value);
+  node *now = pos.now;
+  if (now != this->pbegin) 
+  {
+    newNode->prev = now->prev;
+    newNode->next = now;
+    now->prev->next = newNode;
+    now->prev = newNode;
+  } 
+  else 
+  {
+    this->pbegin = newNode;
+    newNode->next = now;
+    now->prev = newNode;
+  }
 }
 
-void list::erase(list::iterator pos) {
-    node *cur = pos.cur;
-    if (cur != this->_begin) {
-        cur->next->prev = cur->prev;
-        cur->prev->next = cur->next;
-    } else {
-        this->_begin = this->_begin->next;
-    }
-    delete cur;
+void list::erase(list::iterator pos) 
+{
+  node *now = pos.now;
+  if (now != this->pbegin) 
+  {
+    now->next->prev = now->prev;
+    now->prev->next = now->next;
+  } 
+  else 
+  {
+    this->pbegin = this->pbegin->next;
+  }
+  delete now;
 }
 
 void list::splice(list::iterator pos, list &other, list::iterator first, list::iterator last) {
