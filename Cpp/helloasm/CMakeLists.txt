@@ -9,5 +9,5 @@ enable_language(ASM)
 
 add_executable(hello hello.asm)
 add_executable(add add.asm)
-add_execubtable(multiply multiply.asm)
+add_executable(multiply multiply.asm)
 add_executable(subtract subtract.asm)
