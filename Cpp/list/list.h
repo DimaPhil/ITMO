@@ -5,6 +5,8 @@ struct list
 {
   struct iterator;
   struct const_iterator;
+  struct reverse_iterator;
+  struct const_reverse_iterator;
     
   list();
   list(const int &value);
@@ -28,6 +30,10 @@ struct list
   const_iterator begin() const;
   iterator end();
   const_iterator end() const;
+  reverse_iterator rbegin();
+  const_reverse_iterator rbegin() const;
+  reverse_iterator rend();
+  const_reverse_iterator rend() const;
 
   void insert(iterator pos, int value);
   void erase(iterator pos);
@@ -84,8 +90,41 @@ struct list::const_iterator
     
   bool operator == (const const_iterator &it) const;
   bool operator != (const const_iterator &it) const; 
+
   node *now;
   const_iterator(node *now);
+};
+
+struct list::reverse_iterator
+{
+  reverse_iterator();
+  int& operator * () const;
+  reverse_iterator& operator ++ ();
+  reverse_iterator operator ++ (int);
+  reverse_iterator& operator -- ();
+  reverse_iterator operator -- (int);
+  
+  bool operator == (const reverse_iterator &it) const;
+  bool operator != (const reverse_iterator &it) const;
+
+  node *now;
+  reverse_iterator(node *now);
+};
+
+struct list::const_reverse_iterator 
+{
+  const_reverse_iterator();
+  int const& operator * () const;
+  const_reverse_iterator& operator ++ ();
+  const_reverse_iterator operator ++ (int);
+  const_reverse_iterator& operator -- ();
+  const_reverse_iterator operator -- (int);
+    
+  bool operator == (const const_reverse_iterator &it) const;
+  bool operator != (const const_reverse_iterator &it) const; 
+
+  node *now;
+  const_reverse_iterator(node *now);
 };
 
 #endif // LIST_H
