@@ -140,6 +140,8 @@ uint& my_vector::operator [] (int i)
 
 my_vector& my_vector::operator = (my_vector const& other) 
 {
+  if (this == &other)
+    return *this;
   make_own_copy();
   if (other.msk) 
   {
