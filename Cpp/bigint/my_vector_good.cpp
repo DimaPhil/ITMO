@@ -3,12 +3,12 @@
 my_vector::my_vector() 
 {
   msk = 1;
-  links = 0;
+  s.links = 0;
 }
 
 my_vector::my_vector(int size) 
 {
-  links = 0;
+  s.links = 0;
   if (size <= 1) 
   {
     msk = 1 + size * 2;
@@ -16,7 +16,7 @@ my_vector::my_vector(int size)
   else 
   {
     vs = new vector<uint>(size);
-    links = (uint)new uint(1);
+    s.plinks = new uint(1);
     msk = 0;
   }
 }
@@ -26,13 +26,13 @@ my_vector::my_vector(my_vector const& other)
   if (other.msk) 
   {
     msk = other.msk;
-    links = other.links;
+    s.links = other.s.links;
   }
   else 
   {
     vs = other.vs;
-    ++(*(int*)other.links);
-    links = other.links;
+    ++(*other.s.plinks);
+    s.plinks = other.s.plinks;
     msk = 0;
   }
 }
@@ -45,10 +45,10 @@ my_vector::~my_vector()
   }
   else 
   {
-    --(*(int*)links);
-    if (*(int*)links == 0) 
+    --(*s.plinks);
+    if (*s.plinks == 0) 
     {
-      delete (int*)links;
+      delete s.plinks;
       delete vs;
     }
   }
@@ -58,10 +58,10 @@ void my_vector::make_own_copy()
 {
   if (msk)
     return;
-  if ((*(int*)links) > 1) 
+  if ((*s.plinks) > 1) 
   {
-    --(*(int*)links);
-    links = (uint)new uint(1);
+    --(*s.plinks);
+    s.plinks = new uint(1);
     vs = new vector<uint>(*vs);
   }
 }
@@ -72,8 +72,8 @@ void my_vector::init()
     return;
   vs = new vector<uint>();
   if (msk & 2)
-    (*vs).push_back(links);
-  links = (uint)new uint(1);
+    (*vs).push_back(s.links);
+  s.plinks = new uint(1);
   msk = 0;
 }
 
@@ -82,7 +82,7 @@ void my_vector::push_back(uint item)
 {
   if (msk == 1) 
   {
-    links = item;
+    s.links = item;
     msk |= 2;
   }
   else 
@@ -116,7 +116,7 @@ void my_vector::clear()
   resize(0);
 }
 
-int my_vector::size() const 
+size_t my_vector::size() const 
 {
   if (msk)
     return (msk & 2) > 0;
@@ -126,44 +126,46 @@ int my_vector::size() const
 uint const& my_vector::operator [] (int i) const 
 {
   if (msk)
-    return links;
+    return s.links;
   return (*vs)[i];
 }
 
 uint& my_vector::operator [] (int i) 
 {
   if (msk)
-    return links;
+    return s.links;
   make_own_copy();
   return (*vs)[i];
 }
 
 my_vector& my_vector::operator = (my_vector const& other) 
 {
+  if (this == &other)
+    return *this;
   make_own_copy();
   if (other.msk) 
   {
     if (msk) 
     {
       msk = other.msk;
-      links = other.links;
+      s.links = other.s.links;
     }
     else 
     {
       (*vs).clear();
       if (other.msk > 1)
-      (*vs).push_back(other.links);
+      (*vs).push_back(other.s.links);
     }
   }
   else 
   {
     if (!msk) 
     {
-      --(*(int*)links);
-      if (*(int*)links == 0) 
+      --(*s.plinks);
+      if (*s.plinks == 0) 
       {
         delete vs;
-        delete (int*)links;
+        delete s.plinks;
       }
     }
     else 
@@ -172,8 +174,8 @@ my_vector& my_vector::operator = (my_vector const& other)
       //delete links;
     }
     vs = other.vs;
-    links = other.links;
-    ++(*(int*)links);
+    s.plinks = other.s.plinks;
+    ++(*s.plinks);
   }
   return *this;
 }
@@ -181,7 +183,7 @@ my_vector& my_vector::operator = (my_vector const& other)
 uint const& my_vector::back() const 
 {
   if (msk)
-    return links;
+    return s.links;
   return (*vs).back();
 }
 
@@ -190,14 +192,14 @@ bool operator == (my_vector const& a, my_vector const& b)
   if (!a.msk && !b.msk)
     return *(a.vs) == *(b.vs);
   if (a.msk && b.msk)
-    return a.msk == b.msk && a.links == b.links;
+    return a.msk == b.msk && a.s.links == b.s.links;
   if (a.msk && !b.msk) 
   {
     if (bool(a.msk & 2) != (*b.vs).size())
       return false;
     if (bool(a.msk & 2) == 0)
       return true;
-    return a.links == (*b.vs)[0];
+    return a.s.links == (*b.vs)[0];
   }
   if (b.msk && !a.msk) 
   {
@@ -205,7 +207,7 @@ bool operator == (my_vector const& a, my_vector const& b)
       return false;
     if (bool(b.msk & 2) == 0)
       return true;
-    return b.links == (*a.vs)[0];
+    return b.s.links == (*a.vs)[0];
   }
   return false;
 }

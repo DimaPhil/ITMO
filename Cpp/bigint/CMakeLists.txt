@@ -8,8 +8,8 @@ add_executable(big_integer_testing
                big_integer_testing.cpp
                big_integer.h
                big_integer.cpp
-               my_vector2.cpp
-               my_vector2.h
+               my_vector_good.cpp
+               my_vector_good.h
                gtest/gtest-all.cc
                gtest/gtest.h
                gtest/gtest_main.cc)

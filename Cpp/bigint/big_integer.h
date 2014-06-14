@@ -1,7 +1,7 @@
 #ifndef BIG_INTEGER_H
 #define BIG_INTEGER_H
 
-#include "my_vector2.h"   
+#include "my_vector_good.h"   
 #include <vector>
 #include <string>
 

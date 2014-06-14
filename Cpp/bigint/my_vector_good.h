@@ -19,7 +19,7 @@ public:
   void resize(int size);
   void clear();
   
-  int size() const;
+  size_t size() const;
   uint const& operator [] (int i) const;
   uint& operator [] (int i);
 
@@ -32,7 +32,11 @@ public:
     
 private:
   vector<uint>* vs;
-  uint links;
+  union Some 
+  {
+    uint links;
+    uint* plinks;
+  } s;
   char msk;
   void init();
 };
