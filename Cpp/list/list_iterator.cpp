@@ -43,10 +43,10 @@ list::iterator list::iterator::operator -- (int)
 
 bool list::iterator::operator == (const list::iterator &it) const 
 {
-  return this->now == a.now;
+  return this->now == it.now;
 }
 
 bool list::iterator::operator != (const list::iterator &it) const
- {
-  return this->now != a.now;
+{
+  return this->now != it.now;
 }

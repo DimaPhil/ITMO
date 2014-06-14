@@ -1,4 +1,7 @@
 #include "list.h"
+#include "node.cpp"
+#include "list_iterator.cpp"
+#include "list_const_iterator.cpp"
 #include <vector>
 #include <iostream>
 
@@ -9,7 +12,7 @@ list::list() {
   pbegin = pend;
 }
 
-list::list(const int &value) {
+/*list::list(const int &value) {
   pend = new node();
   try {
     pbegin = new node();
@@ -254,4 +257,4 @@ void list::splice(list::iterator pos, list &other, list::iterator first, list::i
   }
   now->prev = r;
   r->next = now;
-}
+}*/
