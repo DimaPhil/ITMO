@@ -1,7 +1,4 @@
 #include "list.h"
-#include "node.cpp"
-#include "list_iterator.cpp"
-#include "list_const_iterator.cpp"
 #include <vector>
 #include <iostream>
 
@@ -12,7 +9,7 @@ list::list() {
   pbegin = pend;
 }
 
-/*list::list(const int &value) {
+list::list(const int &value) {
   pend = new node();
   try {
     pbegin = new node();
@@ -76,10 +73,15 @@ list::list(const list &l)
   }
 }
 
+void swap(list &a, list &b) 
+{
+  std::swap(a.pbegin, b.pbegin);
+  std::swap(a.pend, b.pend);
+}
+
 list& list::operator = (list l) 
 {
-  swap(l->pbegin, *this->pbegin);
-  swap(l->pend, *this->pend);
+  swap(l, *this);
   return *this;
 }
 
@@ -182,6 +184,16 @@ list::const_iterator list::begin() const
   return list::const_iterator(this->pbegin);
 }
 
+list::reverse_iterator list::rbegin()
+{
+  return list::reverse_iterator(this->pend);
+}
+
+list::const_reverse_iterator list::rbegin() const
+{
+  return list::const_reverse_iterator(this->pend);
+}
+
 list::iterator list::end() 
 {
   return list::iterator(this->pend);
@@ -190,6 +202,16 @@ list::iterator list::end()
 list::const_iterator list::end() const 
 {
   return list::const_iterator(this->pend);
+}
+
+list::reverse_iterator list::rend()
+{
+  return list::reverse_iterator(this->pbegin);
+}
+
+list::const_reverse_iterator list::rend() const
+{
+  return list::const_reverse_iterator(this->pbegin);
 }
 
 void list::insert(list::iterator pos, int value)
@@ -257,4 +279,4 @@ void list::splice(list::iterator pos, list &other, list::iterator first, list::i
   }
   now->prev = r;
   r->next = now;
-}*/
+}
