@@ -13,7 +13,7 @@ list::const_reverse_iterator::const_reverse_iterator(node *now)
 int const& list::const_reverse_iterator::operator * () const
 {
   const_reverse_iterator it = this->now;
-  --it;
+  ++it;
   return it.now->value;
 }
 

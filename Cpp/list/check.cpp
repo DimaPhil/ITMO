@@ -1,6 +1,7 @@
 #include "list.h"
 #include <cassert>
 #include <cstdio>
+#include <iostream>
 
 void hand_tests()
 {
@@ -35,6 +36,19 @@ void hand_tests()
   assert(*it == 5);
   ++it;
   assert(*it == 1);
+
+  printf("Checking test 4\n");
+  list d;
+  d.push_back(1);
+  d.push_back(2);
+  d.push_back(3);
+  d.push_back(4);
+  for (list::iterator it = d.begin(); it != d.end(); ++it)
+    std::cout << *it << ' ';
+  std::cout << '\n';
+  for (list::reverse_iterator it = d.rbegin(); it != d.rend(); ++it)
+    std::cout << *it << ' ';
+  std::cout << '\n';
 }
 
 void random_tests()
