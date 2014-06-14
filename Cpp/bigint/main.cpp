@@ -9,10 +9,10 @@ int main()
 {
   try 
   {           
-    /*big_integer a = 2;                           
+    big_integer a = 2;                           
     big_integer b = 3;
-    cout << a + b << '\n';*/
-    for (int it = 0; it < 1000; ++it)
+    cout << a + b << '\n';
+    /*for (int it = 0; it < 1000; ++it)
     {
       big_integer accumulator = 1;
       vector <int> numbers;
@@ -30,7 +30,7 @@ int main()
       //cout << accumulator << "\n" << numbers[0] << "\n\n";
       if (accumulator != numbers[0])
         cout << "Something went wrong :(\n";
-    }
+    }*/
     cout << double(clock()) / CLOCKS_PER_SEC;
   }                     
   catch (std::runtime_error& e) 
