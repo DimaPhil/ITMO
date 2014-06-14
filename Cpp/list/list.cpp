@@ -223,28 +223,35 @@ void list::erase(list::iterator pos)
   delete now;
 }
 
-void list::splice(list::iterator pos, list &other, list::iterator first, list::iterator last) {
-    node *cur = pos.cur;
-    node *l = first.cur;
-    node *r = last.cur;
+void list::splice(list::iterator pos, list &other, list::iterator first, list::iterator last) 
+{
+  node *now = pos.now;
+  node *l = first.now;
+  node *r = last.now;
     
-    node *rr = r->prev;
-    if (l == other._begin) {
-        other._begin = r;
-        r->prev = r;
-    } else {
-        l->prev->next = r;
-        r->prev = l->prev;
-    }
+  node *prevR = r->prev;
+  if (l == other.pbegin) 
+  {
+    other.pbegin = r;
+    r->prev = r;
+  } 
+  else 
+  {
+    l->prev->next = r;
+    r->prev = l->prev;
+  }
     
-    r = rr;
-    if (cur == this->_begin) {
-        this->_begin = l;
-        l->prev = l;
-    } else {
-        cur->prev->next = l;
-        l->prev = cur->prev;
-    }
-    cur->prev = r;
-    r->next = cur;
+  r = prevR;
+  if (now == this->pbegin) 
+  {
+    this->pbegin = l;
+    l->prev = l;
+  } 
+  else 
+  {
+    now->prev->next = l;
+    l->prev = now->prev;
+  }
+  now->prev = r;
+  r->next = now;
 }
