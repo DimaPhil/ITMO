@@ -43,10 +43,27 @@ void hand_tests()
   d.push_back(2);
   d.push_back(3);
   d.push_back(4);
+  d.push_front(0);
+  d.push_front(-1);
   for (list::iterator it = d.begin(); it != d.end(); ++it)
     std::cout << *it << ' ';
   std::cout << '\n';
   for (list::reverse_iterator it = d.rbegin(); it != d.rend(); ++it)
+    std::cout << *it << ' ';
+  std::cout << '\n';
+
+  printf("Checking test 5\n");
+  list e;
+  e.push_back(1);
+  e.push_back(4);
+  e.push_back(5);
+  list toInsert;
+  toInsert.push_back(2);
+  toInsert.push_back(3);
+  list::iterator itE = e.begin();
+  ++itE;
+  e.splice(itE, toInsert, toInsert.begin(), toInsert.end());
+  for (list::iterator it = e.begin(); it != e.end(); ++it)
     std::cout << *it << ' ';
   std::cout << '\n';
 }
