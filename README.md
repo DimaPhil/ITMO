@@ -1,1 +1,1 @@
-+7(911)019-54-89 ;-)
+To code or not to code - that is the question
