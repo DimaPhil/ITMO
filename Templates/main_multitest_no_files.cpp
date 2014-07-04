@@ -44,6 +44,12 @@ typedef pair <ll, int> pli;
 typedef pair <int, ll> pil;
 typedef vector <pii> vpii;
 
+#ifdef WIN32
+    #define LLD "%I64d"
+#else
+    #define LLD "%lld"
+#endif
+
 const double EPS = 1e-9;
 const int INF = 1e9;
 const ll INFLONG = (ll)1e18;
