@@ -4,58 +4,45 @@
 #include <vector>
 #include <algorithm>
 
-#ifdef WIN32
-    #define LLD "%I64d"
-#else
-    #define LLD "%lld"
-#endif
-
 using namespace std;
 
-typedef long long ll;
-
-const int MaxInt = 2147483647;
-const ll MaxLong = 9223372036854775807LL;
+const double EPS = 1e-9;
 
 /* Start copying from here */
 
-int sign(int x) {
-    return x > 0 ? 1 : (!x ? 0 : -1);
-}
-
-ll sign(ll x) {
-    return x > 0 ? 1 : (!x ? 0 : -1);
+double sign(double x) {
+    return x > EPS ? 1 : (fabs(x) <= EPS ? 0 : -1);
 }
 
 /* struct for Point */
 
 struct Point {
-    int x, y;
-    Point() {x = y = 0;}
-    Point(int x, int y) : x(x), y(y) {}
+    double x, y;
+    Point() {x = y = 0.0;}
+    Point(double x, double y) : x(x), y(y) {}
 
     /* reading and printing */
 
     void read() {
-        scanf("%d%d", &x, &y);
+        scanf("%lf%lf", &x, &y);
     }
 
     void print() {
-        printf("%d %d\n", x, y);
+        printf("%.10lf %.10lf\n", x, y);
     }                
 
     void eprint() {
-        fprintf(stderr, "%d %d\n", x, y);
+        fprintf(stderr, "%.5lf %.5lf\n", x, y);
     }
 
     /* Length, operators */
 
-    ll len2() {
-        return 1LL * x * x + 1LL * y * y;
+    double len2() {
+        return x * x + y * y;
     }
 
     double len() {
-        return sqrt(len2() + 0.0);
+        return sqrt(len2());
     }
 
     Point& operator += (Point const& p) {
@@ -70,9 +57,15 @@ struct Point {
         return *this;
     }
 
-    Point& operator *= (ll p) {
+    Point& operator *= (double p) {
         x *= p;
         y *= p;
+        return *this;
+    }
+
+    Point& operator /= (double p) {
+        x /= p;
+        y /= p;
         return *this;
     }
 
@@ -82,7 +75,30 @@ struct Point {
         p.y = -p.y;
         return p;
     }
-} pNone = Point(MaxInt, MaxInt);
+
+    /* some useful functions */
+
+    Point& normalize() {
+        double length = len();
+        x /= length;
+        y /= length;
+        return *this;
+    }
+
+    Point& rotate(double sinus, double cosinus) {
+        double newx = x * cosinus - y * sinus;
+        double newy = y * cosinus + x * sinus;
+        x = newx;
+        y = newy;
+        return *this;
+    }
+
+    Point& rotate(double alpha) {
+        return rotate(sin(alpha), cos(alpha));
+    }
+} pNone = Point(1e18, 1e18);
+
+/* operators */
 
 Point operator + (Point a, Point const& b) {
     return a += b;
@@ -92,20 +108,40 @@ Point operator - (Point a, Point const& b) {
     return a -= b;
 }
 
-Point operator * (Point a, ll const& b) {
+Point operator * (Point a, double const& b) {
     return a *= b;
 }
 
+Point operator / (Point a, double const& b) {
+    return a /= b;
+}
+
+/* useful functions */
+
+Point normalize(Point p) {
+    return p.normalize();
+}
+
+Point rotate(Point p, double sinus, double cosinus) {
+    return p.rotate(sinus, cosinus);
+}
+
+Point rotate(Point p, double alpha) {
+    return p.rotate(alpha);
+}
+
+/* Equate operators */
+
 bool operator < (Point const& a, Point const& b) {
-    return a.x < b.x || (a.x == b.x && a.y < b.y);
+    return a.x < b.x - EPS || (fabs(a.x - b.x) <= EPS && a.y < b.y - EPS);
 }
 
 bool operator == (Point const& a, Point const& b) {
-    return a.x == b.x && a.y == b.y;
+    return fabs(a.x - b.x) <= EPS && fabs(a.y - b.y) <= EPS;
 }
 
 bool operator > (Point const& a, Point const& b) {
-    return a.x > b.x || (a.x == b.x && a.y > b.y);
+    return a.x > b.x + EPS || (fabs(a.x - b.x) <= EPS && a.y > b.y + EPS);
 }
 
 bool operator <= (Point const& a, Point const& b) {
@@ -118,19 +154,19 @@ bool operator >= (Point const& a, Point const& b) {
 
 /* cross and dot products */
 
-ll operator * (Point const& a, Point const& b) {
-    return 1LL * a.x * b.x + 1LL * a.y * b.y;
+double operator * (Point const& a, Point const& b) {
+    return a.x * b.x + a.y * b.y;
 }
 
-ll operator & (Point const& a, Point const& b) {
-    return 1LL * a.x * b.y - 1LL * a.y * b.x;
+double operator & (Point const& a, Point const& b) {
+    return a.x * b.y - a.y * b.x;
 }
 
-ll dotProduct(Point const& a, Point const& b) {
+double dotProduct(Point const& a, Point const& b) {
     return a * b;
 }
 
-ll crossProduct(Point const& a, Point const& b) {
+double crossProduct(Point const& a, Point const& b) {
     return a & b;
 }
 
@@ -144,61 +180,87 @@ void swap(Point &a, Point &b) {
 /* struct for Line */
 
 struct Line {
-    ll a, b, c;
-    Line() {a = b = c = 0;}
-    Line(ll a, ll b, ll c) : a(a), b(b), c(c) {}
+    double a, b, c;
+    Line() {a = b = c = 0.0;}
+    Line(double a, double b, double c) : a(a), b(b), c(c) {}
     Line(Point const& p1, Point const& p2) {
         a = p2.y - p1.y;
         b = p1.x - p2.x;
-        c = -1LL * a * p1.x - 1LL * b * p1.y;
+        c = -a * p1.x - b * p1.y;
     }
 
     /* printing line */
 
     void print() {
-        printf(LLD" "LLD" "LLD"\n", a, b, c);
+        printf("%.10lf %.10lf %.10lf\n", a, b, c);
     }
 
     void eprint() {
-        fprintf(stderr, LLD" "LLD" "LLD"\n", a, b, c);
+        fprintf(stderr, "%.5lf %.5lf %.5lf\n", a, b, c);
     }
 
     void printNormalized() {
-        assert(a || b);
-        double d = sqrt(a * a + b + b + 0.0);
+        assert(fabs(a) > EPS || fabs(b) > EPS);
+        double d = sqrt(a * a + b + b);
         printf("%.10lf %.10lf %.10lf\n", a / d, b / d, c / d);
     }
 
     void eprintNormalized() {
-        assert(a || b);
+        assert(fabs(a) > EPS || fabs(b) > EPS);
         double d = sqrt(a * a + b + b + 0.0);
         fprintf(stderr, "%.5lf %.5lf %.5lf\n", a / d, b / d, c / d);
     }
 
     /* some useful functions */
 
-    ll substitute(Point const& p) {
+    Line& normalize() {
+        assert(fabs(a) >= EPS || fabs(b) >= EPS);
+        double d = sqrt(a * a + b * b);
+        a /= d;
+        b /= d;
+        c /= d;
+        return *this;
+    }
+
+    double substitute(Point const& p) {
         return a * p.x + b * p.y + c;
     }
 
     bool contains(Point const& p) {
-        return !substitute(p);
+        return fabs(substitute(p)) <= EPS;
     }
 
     bool parallel(Line const& l) {
-        return a * l.b == b * l.a;
+        return fabs(a * l.b - b * l.a) <= EPS;
     }
 
     bool equal(Line const& l) {
-        return parallel(l) && a * l.c == b * l.a;
+        return parallel(l) && fabs(a * l.c - b * l.a) <= EPS;
     }
 
     bool intersect(Line const& l) {
         return !parallel(l) && !equal(l);
     }
+
+    double distance(Point const& p) {
+        return fabs(substitute(p)) / sqrt(a * a + b * b);
+    }
+
+    double distance(Line l) {
+        if (!parallel(l))
+            return 0.0;
+        Line thisLine = *this;
+        thisLine.normalize();
+        l.normalize();
+        return thisLine.c - l.c;
+    }
 };
 
-ll substitute(Line l, Point const& p) {
+Line normalize(Line l) {
+    return l.normalize();
+}
+
+double substitute(Line l, Point const& p) {
     return l.substitute(p);
 }
 
@@ -216,6 +278,14 @@ bool parallel(Line l1, Line const& l2) {
 
 bool intersect(Line l1, Line const& l2) {
     return l1.intersect(l2);
+}
+
+double distance(Line l, Point const& p) {
+    return l.distance(p);
+}
+
+double distance(Line l1, Line l2) {
+    return l1.distance(l2);
 }
 
 /* struct for Segment */
@@ -242,17 +312,17 @@ struct Segment {
 
     void print() {
         endsCorrection();
-        printf("%d %d %d %d\n", l.x, l.y, r.x, r.y);
+        printf("%.10lf %.10lf %.10lf %.10lf\n", l.x, l.y, r.x, r.y);
     }
 
     void eprint() {
         endsCorrection();
-        fprintf(stderr, "%d %d %d %d\n", l.x, l.y, r.x, r.y);
+        fprintf(stderr, "%.5lf %.5lf %.5lf %.5lf\n", l.x, l.y, r.x, r.y);
     }
 
     /* Length */
 
-    ll len2() {
+    double len2() {
         return (r - l).len2();
     }
 
@@ -280,13 +350,13 @@ struct Segment {
     }
 
     bool contains(Point const& p) {
-        return !((p - l) & (r - l)) && (p - l) * (r - l) >= 0 && (p - r) * (l - r) >= 0;
+        return fabs((p - l) & (r - l)) <= EPS && (p - l) * (r - l) >= -EPS && (p - r) * (l - r) >= -EPS;
     }
 
     bool contains(Segment const& s) {
         return contains(s.l) && contains(s.r);
     }
-} sNone = Segment(pNone, pNone);
+};
 
 bool parallel(Segment s1, Segment const& s2) {
     return s1.parallel(s2);

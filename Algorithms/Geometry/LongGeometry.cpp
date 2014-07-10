@@ -14,7 +14,6 @@ using namespace std;
 
 typedef long long ll;
 
-const int MaxInt = 2147483647;
 const ll MaxLong = 9223372036854775807LL;
 
 /* Start copying from here */
@@ -30,28 +29,28 @@ ll sign(ll x) {
 /* struct for Point */
 
 struct Point {
-    int x, y;
+    ll x, y;
     Point() {x = y = 0;}
-    Point(int x, int y) : x(x), y(y) {}
+    Point(ll x, ll y) : x(x), y(y) {}
 
     /* reading and printing */
 
     void read() {
-        scanf("%d%d", &x, &y);
+        scanf(LLD""LLD, &x, &y);
     }
 
     void print() {
-        printf("%d %d\n", x, y);
+        printf(LLD" "LLD"\n", x, y);
     }                
 
     void eprint() {
-        fprintf(stderr, "%d %d\n", x, y);
+        fprintf(stderr, LLD" "LLD"\n", x, y);
     }
 
     /* Length, operators */
 
     ll len2() {
-        return 1LL * x * x + 1LL * y * y;
+        return x * x + y * y;
     }
 
     double len() {
@@ -82,7 +81,7 @@ struct Point {
         p.y = -p.y;
         return p;
     }
-} pNone = Point(MaxInt, MaxInt);
+} pNone = Point(MaxLong, MaxLong);
 
 Point operator + (Point a, Point const& b) {
     return a += b;
@@ -119,11 +118,11 @@ bool operator >= (Point const& a, Point const& b) {
 /* cross and dot products */
 
 ll operator * (Point const& a, Point const& b) {
-    return 1LL * a.x * b.x + 1LL * a.y * b.y;
+    return a.x * b.x + a.y * b.y;
 }
 
 ll operator & (Point const& a, Point const& b) {
-    return 1LL * a.x * b.y - 1LL * a.y * b.x;
+    return a.x * b.y - a.y * b.x;
 }
 
 ll dotProduct(Point const& a, Point const& b) {
@@ -150,7 +149,7 @@ struct Line {
     Line(Point const& p1, Point const& p2) {
         a = p2.y - p1.y;
         b = p1.x - p2.x;
-        c = -1LL * a * p1.x - 1LL * b * p1.y;
+        c = -a * p1.x - b * p1.y;
     }
 
     /* printing line */
@@ -242,12 +241,12 @@ struct Segment {
 
     void print() {
         endsCorrection();
-        printf("%d %d %d %d\n", l.x, l.y, r.x, r.y);
+        printf(LLD" "LLD" "LLD" "LLD"\n", l.x, l.y, r.x, r.y);
     }
 
     void eprint() {
         endsCorrection();
-        fprintf(stderr, "%d %d %d %d\n", l.x, l.y, r.x, r.y);
+        fprintf(stderr, LLD" "LLD" "LLD" "LLD"\n", l.x, l.y, r.x, r.y);
     }
 
     /* Length */
@@ -286,7 +285,7 @@ struct Segment {
     bool contains(Segment const& s) {
         return contains(s.l) && contains(s.r);
     }
-} sNone = Segment(pNone, pNone);
+};
 
 bool parallel(Segment s1, Segment const& s2) {
     return s1.parallel(s2);
