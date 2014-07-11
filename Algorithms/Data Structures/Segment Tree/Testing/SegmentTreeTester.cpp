@@ -4,7 +4,6 @@
 #include <vector>
 #include <cassert>
 #include "../SegmentTree.h"
-//#include "../MultiSegmentTree.h"
 
 using namespace std;
 
