@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const double EPS = 1e-9;
+const double EPS = 1e-8;
 
 /* Start copying from here */
 
@@ -14,18 +14,30 @@ double sign(double x) {
     return x > EPS ? 1 : (fabs(x) <= EPS ? 0 : -1);
 }
 
-/* struct for Point */
+double sqr(double x) {
+    return x * x;
+}
+
+/* Forward declaration */
+struct Point;
+struct Line;
+bool parallel(Line const& l1, Line const& l2);
+double distanceTo(Line const& l, Point const& p);
+
+/* Point */
 
 struct Point {
     double x, y;
     Point() {x = y = 0.0;}
     Point(double x, double y) : x(x), y(y) {}
 
-    /* reading and printing */
+    /* Reading */
 
     void read() {
         scanf("%lf%lf", &x, &y);
     }
+
+    /* Printing */
 
     void print() {
         printf("%.10lf %.10lf\n", x, y);
@@ -35,15 +47,17 @@ struct Point {
         fprintf(stderr, "%.5lf %.5lf\n", x, y);
     }
 
-    /* Length, operators */
+    /* Length */
 
     double len2() {
-        return x * x + y * y;
+        return sqr(x) + sqr(y);
     }
 
     double len() {
         return sqrt(len2());
     }
+
+    /* Operators */
 
     Point& operator += (Point const& p) {
         x += p.x;
@@ -76,7 +90,7 @@ struct Point {
         return p;
     }
 
-    /* some useful functions */
+    /* Useful functions */
 
     Point& normalize() {
         double length = len();
@@ -98,7 +112,7 @@ struct Point {
     }
 } pNone = Point(1e18, 1e18);
 
-/* operators */
+/* Operators */
 
 Point operator + (Point a, Point const& b) {
     return a += b;
@@ -114,20 +128,6 @@ Point operator * (Point a, double const& b) {
 
 Point operator / (Point a, double const& b) {
     return a /= b;
-}
-
-/* useful functions */
-
-Point normalize(Point p) {
-    return p.normalize();
-}
-
-Point rotate(Point p, double sinus, double cosinus) {
-    return p.rotate(sinus, cosinus);
-}
-
-Point rotate(Point p, double alpha) {
-    return p.rotate(alpha);
 }
 
 /* Equate operators */
@@ -152,7 +152,7 @@ bool operator >= (Point const& a, Point const& b) {
     return !(a < b);
 }
 
-/* cross and dot products */
+/* Cross and dot products */
 
 double operator * (Point const& a, Point const& b) {
     return a.x * b.x + a.y * b.y;
@@ -170,145 +170,48 @@ double crossProduct(Point const& a, Point const& b) {
     return a & b;
 }
 
-/* some useful functions */
+/* Useful functions */
+
+Point normalize(Point p) {
+    return p.normalize();
+}
+
+Point rotate(Point p, double sinus, double cosinus) {
+    return p.rotate(sinus, cosinus);
+}
+
+Point rotate(Point p, double alpha) {
+    return p.rotate(alpha);
+}
 
 void swap(Point &a, Point &b) {
     swap(a.x, b.x);
     swap(a.y, b.y);
 }
 
-/* struct for Line */
-
-struct Line {
-    double a, b, c;
-    Line() {a = b = c = 0.0;}
-    Line(double a, double b, double c) : a(a), b(b), c(c) {}
-    Line(Point const& p1, Point const& p2) {
-        a = p2.y - p1.y;
-        b = p1.x - p2.x;
-        c = -a * p1.x - b * p1.y;
-    }
-
-    /* printing line */
-
-    void print() {
-        printf("%.10lf %.10lf %.10lf\n", a, b, c);
-    }
-
-    void eprint() {
-        fprintf(stderr, "%.5lf %.5lf %.5lf\n", a, b, c);
-    }
-
-    void printNormalized() {
-        assert(fabs(a) > EPS || fabs(b) > EPS);
-        double d = sqrt(a * a + b + b);
-        printf("%.10lf %.10lf %.10lf\n", a / d, b / d, c / d);
-    }
-
-    void eprintNormalized() {
-        assert(fabs(a) > EPS || fabs(b) > EPS);
-        double d = sqrt(a * a + b + b + 0.0);
-        fprintf(stderr, "%.5lf %.5lf %.5lf\n", a / d, b / d, c / d);
-    }
-
-    /* some useful functions */
-
-    Line& normalize() {
-        assert(fabs(a) >= EPS || fabs(b) >= EPS);
-        double d = sqrt(a * a + b * b);
-        a /= d;
-        b /= d;
-        c /= d;
-        return *this;
-    }
-
-    double substitute(Point const& p) {
-        return a * p.x + b * p.y + c;
-    }
-
-    bool contains(Point const& p) {
-        return fabs(substitute(p)) <= EPS;
-    }
-
-    bool parallel(Line const& l) {
-        return fabs(a * l.b - b * l.a) <= EPS;
-    }
-
-    bool equal(Line const& l) {
-        return parallel(l) && fabs(a * l.c - b * l.a) <= EPS;
-    }
-
-    bool intersect(Line const& l) {
-        return !parallel(l) && !equal(l);
-    }
-
-    double distance(Point const& p) {
-        return fabs(substitute(p)) / sqrt(a * a + b * b);
-    }
-
-    double distance(Line l) {
-        if (!parallel(l))
-            return 0.0;
-        Line thisLine = *this;
-        thisLine.normalize();
-        l.normalize();
-        return thisLine.c - l.c;
-    }
-};
-
-Line normalize(Line l) {
-    return l.normalize();
-}
-
-double substitute(Line l, Point const& p) {
-    return l.substitute(p);
-}
-
-bool contains(Line l, Point const& p) {
-    return l.contains(p);
-}
-
-bool equal(Line l1, Line const& l2) {
-    return l1.equal(l2);
-}
-
-bool parallel(Line l1, Line const& l2) {
-    return l1.parallel(l2);
-}
-
-bool intersect(Line l1, Line const& l2) {
-    return l1.intersect(l2);
-}
-
-double distance(Line l, Point const& p) {
-    return l.distance(p);
-}
-
-double distance(Line l1, Line l2) {
-    return l1.distance(l2);
-}
-
-/* struct for Segment */
+/* Segment */
 
 struct Segment {
     Point l, r;
     Segment() {}
     Segment(Point const& l, Point const& r) : l(l), r(r) {}
 
-    /* ends correction */
+    /* Ends correction */
 
     void endsCorrection() {
         if (l > r)
           swap(l, r);
     }                     
 
-    /* reading and printing */
+    /* Reading */
 
     void read() {
         l.read();
         r.read();
         endsCorrection();
     }
+
+    /* Printing */
 
     void print() {
         endsCorrection();
@@ -330,24 +233,7 @@ struct Segment {
         return (r - l).len();
     }
 
-    /* some useful functions */
-
-    bool parallel(Segment const& s) {
-        return Line(l, r).parallel(Line(s.l, s.r));
-    }
-
-    bool intersect(Line const& otherLine) {
-        return sign(substitute(otherLine, l)) != sign(substitute(otherLine, r));
-    }
-
-    bool intersect(Segment const& s) {
-        Line thisLine = Line(l, r);
-        Line otherLine = Line(s.l, s.r);
-        if (thisLine.parallel(otherLine))
-            return thisLine.equal(otherLine) && max(l, s.l) <= min(r, s.r);
-        return sign(thisLine.substitute(s.l)) != sign(thisLine.substitute(s.r)) &&
-               sign(otherLine.substitute(l)) != sign(otherLine.substitute(r));
-    }
+    /* Useful functions */
 
     bool contains(Point const& p) {
         return fabs((p - l) & (r - l)) <= EPS && (p - l) * (r - l) >= -EPS && (p - r) * (l - r) >= -EPS;
@@ -358,18 +244,189 @@ struct Segment {
     }
 };
 
-bool parallel(Segment s1, Segment const& s2) {
-    return s1.parallel(s2);
+/* Equate operators */
+
+bool operator == (Segment const& s1, Segment const& s2) {
+    return s1.l == s2.l && s1.r == s2.r;
 }
 
-bool intersect(Segment s, Line const& l) {
-    return s.intersect(l);
+bool operator != (Segment const& s1, Segment const& s2) {
+    return !(s1 == s2);
 }
 
-bool intersect(Segment s1, Segment const& s2) {
-    return s1.intersect(s2);
+/* Useful functions */
+
+bool contains(Segment s, Point const& p) {
+    return s.contains(p);
+}
+
+bool contains(Segment s1, Segment const& s2) {
+    return s1.contains(s2);
+}
+
+/* Line */
+
+struct Line {
+    double a, b, c;
+    Line() {a = b = c = 0.0;}
+    Line(double a, double b, double c) : a(a), b(b), c(c) {}
+    Line(Point const& p1, Point const& p2) {
+        a = p2.y - p1.y;
+        b = p1.x - p2.x;
+        c = -a * p1.x - b * p1.y;
+    }
+    Line(Segment const& s) {
+        *this = Line(s.l, s.r);
+    }
+
+    /* Reading */
+
+    void read() {
+        scanf("%lf%lf%lf", &a, &b, &c);
+    }                                
+
+    /* Printing */
+
+    void print() {
+        printf("%.10lf %.10lf %.10lf\n", a, b, c);
+    }
+
+    void eprint() {
+        fprintf(stderr, "%.5lf %.5lf %.5lf\n", a, b, c);
+    }
+
+    void printNormalized() {
+        assert(fabs(a) > EPS || fabs(b) > EPS);
+        double d = sqrt(a * a + b + b);
+        printf("%.10lf %.10lf %.10lf\n", a / d, b / d, c / d);
+    }
+
+    void eprintNormalized() {
+        assert(fabs(a) > EPS || fabs(b) > EPS);
+        double d = sqrt(a * a + b + b + 0.0);
+        fprintf(stderr, "%.5lf %.5lf %.5lf\n", a / d, b / d, c / d);
+    }
+
+    /* Useful functions */
+
+    Line& normalize() {
+        assert(fabs(a) >= EPS || fabs(b) >= EPS);
+        double d = sqrt(a * a + b * b);
+        a /= d;
+        b /= d;
+        c /= d;
+        return *this;
+    }
+
+    double substitute(Point const& p) {
+        return a * p.x + b * p.y + c;
+    }
+
+    bool contains(Point const& p) {
+        return fabs(substitute(p)) <= EPS;
+    }
+
+    bool contains(Segment const& s) {
+        return contains(s.l) && contains(s.r);
+    }
+};
+
+/* Equate operators */
+
+bool operator == (Line const& l1, Line const& l2) {
+    return parallel(l1, l2) && fabs(l1.a * l2.c - l1.c * l2.a) <= EPS;
+}
+
+bool operator != (Line const& l1, Line const& l2) {
+    return !(l1 == l2);
+}
+
+/* Useful functions */
+
+Line normalize(Line l) {
+    return l.normalize();
+}
+
+double substitute(Line l, Point const& p) {
+    return l.substitute(p);
+}
+
+bool contains(Line l, Point const& p) {
+    return l.contains(p);
 }
 
 bool contains(Line l, Segment const& s) {
-    return l.contains(s.l) && l.contains(s.r);
+    return l.contains(s);
+}
+
+/* Intersections, parallels and so on */
+
+bool intersect(Segment const& s1, Segment const& s2) {
+    Line thisLine = Line(s1);
+    Line otherLine = Line(s2);
+    if (parallel(thisLine, otherLine))
+        return thisLine == otherLine && max(s1.l, s2.l) <= min(s1.r, s2.r);
+    return sign(thisLine.substitute(s2.l)) != sign(thisLine.substitute(s2.r)) &&
+           sign(otherLine.substitute(s1.l)) != sign(otherLine.substitute(s1.r));
+}
+
+bool parallel(Segment const& s1, Segment const& s2) {
+    return parallel(Line(s1), Line(s2));
+}
+
+bool intersect(Line const& l1, Line const& l2) {  //lines must be non-equal
+    assert(l1 != l2);
+    return !parallel(l1, l2);
+}
+
+bool parallel(Line const& l1, Line const& l2) {
+    return fabs(l1.a * l2.b - l1.b * l2.a) <= EPS;
+}
+
+bool intersect(Line const& l, Segment const& s) {
+    if (parallel(l, s))
+        return l == Line(s);
+    return sign(substitute(l, s.l)) != sign(substitute(l, s.r));
+}
+
+bool parallel(Line const& l, Segment const& s) {
+    return parallel(l, Line(s));
+}
+
+/* Distances */
+
+double distanceTo(Point const& p1, Point const& p2) {
+    return (p2 - p1).len();
+}
+
+double distanceTo(Segment const& s, Point const& p) {
+    if ((p - s.l) * (s.r - s.l) >= -EPS && (p - s.r) * (s.l - s.r) >= -EPS)
+        return distanceTo(Line(s), p);
+    return min(distanceTo(s.l, p), distanceTo(s.r, p));
+}
+
+double distanceTo(Segment const& s1, Segment const& s2) {
+    if (intersect(s1, s2))
+        return 0.0;
+    double minFirst = min(distanceTo(s2, s1.l), distanceTo(s2, s1.r));
+    double minSecond = min(distanceTo(s1, s2.l), distanceTo(s1, s2.r));
+    return min(minFirst, minSecond);
+}
+
+double distanceTo(Line const& l, Point const& p) {
+    return fabs(substitute(l, p)) / sqrt(sqr(l.a) + sqr(l.b));
+}
+
+double distanceTo(Line const& l, Segment const& s) {
+    if (intersect(l, s))
+        return 0;
+    return min(distanceTo(l, s.l), distanceTo(l, s.r));
+}
+
+double distanceTo(Line l1, Line l2) {
+    if (!parallel(l1, l2))
+        return 0.0;
+    l1.normalize();
+    l2.normalize();
+    return fabs(l1.c - l2.c);
 }
