@@ -59,7 +59,7 @@ int main()
   freopen(TASKNAME".in", "r", stdin);
   freopen(TASKNAME".out", "w", stdout);
   int testsNumber;
-  scanf("%d", &testsNumbers);
+  scanf("%d", &testsNumber);
   while (testsNumber--) {
     /* Clear all! */
 

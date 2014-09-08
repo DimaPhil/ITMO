@@ -62,7 +62,7 @@ int main()
   #endif
 
   int testsNumber;
-  scanf("%d", &testsNumbers);
+  scanf("%d", &testsNumber);
   while (testsNumber--) {
     /* Clear all! */
 
