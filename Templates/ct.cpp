@@ -65,7 +65,6 @@ void createProblem(const char *problemName, const std::string &templateType, con
     std::string needPath = (std::string)buffer + \
                            "\\" + (std::string)problemName + \
                            "\\" + (language == "java" ? "Main" : "main") + \
-                           (templateType.size() ? "_" + templateType : "") + \
                            "." + language;
     
     CopyFile(templatePath.c_str(), 
