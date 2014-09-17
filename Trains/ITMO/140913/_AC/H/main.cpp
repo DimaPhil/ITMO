@@ -164,9 +164,5 @@ int main()
   pp.norm();
   pp = pp * d;
   pp.print();
-
-  pt q = pt(1.35355339059327, 1.35355339059327);
-  cout << q.len() - 1 << '\n';
-  cout << (minDist(q, p) - q).len();
   return 0;
 }
