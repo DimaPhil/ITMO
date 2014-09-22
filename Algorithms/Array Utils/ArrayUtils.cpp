@@ -61,6 +61,20 @@ long long inversionsCount(std::vector <T> &elements) {
     return inversionsCount(tmp, n, true);
 }
 
+template <typename T>
+void sortAndUnique(T *elements, int n) {
+    std::sort(elements, elements + n);
+    int newSize = std::unique(elements, elements + n) - elements;
+    for (int i = newSize; i < n; i++)
+        elements[i] = 0;
+}
+
+template <typename T>
+void sortAndUnique(std::vector <T> &elements) {
+    std::sort(elements.begin(), elements.end());
+    elements.erase(std::unique(elements.begin(), elements.end()), elements.end());
+}
+
 int main() {
     int a[] = {2, 3, 4, 1, 5};
     std::vector <long long> b;
@@ -71,4 +85,25 @@ int main() {
     b.push_back(5);
     printf("%lld\n", inversionsCount(a, 5));
     printf("%lld\n", inversionsCount(b));
+
+    int c[] = {4, 2, 4, 2, 3, 5, 3};
+    sortAndUnique(c, 7);
+    for (int i = 0; i < 7; i++)
+        printf("%d ", c[i]);
+    printf("\n");
+
+    std::vector <int> d;
+    d.push_back(4);
+    d.push_back(2);
+    d.push_back(4);
+    d.push_back(2);
+    d.push_back(3);
+    d.push_back(5);
+    d.push_back(3);
+    sortAndUnique(d);
+    for (int i = 0; i < (int)d.size(); i++)
+        printf("%d ", d[i]);
+    printf("\n");
+
+    return 0;
 }
