@@ -1,26 +1,9 @@
 #define TASKNAME ""
 
-#include <cstdio>
-#include <iostream>
-#include <fstream>
-#include <cmath>
-#include <algorithm>
-#include <ctime>
-#include <cctype>
-#include <cstdlib>
-#include <cassert>
-#include <functional>
-#include <iomanip>
-#include <string>
-#include <cstring>
-#include <map>
-#include <set>
-#include <vector>
+#include <bits/stdc++.h>
  
-#define sqr(a) ((a) * (a))
 #define all(a) (a).begin(), (a).end()
 #define zero(a) memset(a, 0, sizeof(a))
-#define abs(a) (((a) < 0) ? -(a) : (a))
 #define sz(a) (int)a.size()
 #define fst first
 #define snd second
@@ -49,6 +32,16 @@ typedef vector <pii> vpii;
 #else
     #define LLD "%lld"
 #endif
+
+template <typename T>
+T sqr(T x) {
+    return x * x;
+}
+
+template <typename T>
+T abs(T x) {
+    return x > 0 ? x : -x;
+}
 
 const double EPS = 1e-9;
 const int INF = 1e9;
