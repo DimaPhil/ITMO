@@ -76,6 +76,8 @@ private:
     std::vector <long long> powers;
 };
 
+/*-------------------------------------------------------------------------*/ 
+
 struct HashWithManyModules {
     const long long base = 239017;
     const int modulesCount = 2;
@@ -174,6 +176,41 @@ private:
     std::vector < std::vector <long long> > hash, hashRev;
     std::vector < std::vector <long long> > powers;
 };
+
+/* -------------------------------------------------------------------------- */
+
+void calcKMP(std::string &s, std::vector <int> &pi) {
+    size_t n = s.size();
+    pi.resize(n);
+    pi[0] = 0;
+    for (size_t i = 1; i < n; ++i) {
+        int j = pi[i - 1];
+        while (j && s[i] != s[j])
+            j = pi[j - 1];
+        if (s[i] == s[j])
+            ++j;
+        pi[i] = j;
+    }            
+}
+
+/* -------------------------------------------------------------------------- */
+
+void calcZ(std::string &s, std::vector <int> &z) {
+    size_t n = s.size();
+    z.resize(s.size());
+    z[0] = 0;
+    size_t  l = 0, r = 0;
+    for (size_t i = 1; i < n; ++i) {
+        if (i <= r)
+            z[i] = std::min(z[i - l], (int)(r - i + 1));
+        while (i + z[i] < n && s[i + z[i]] == s[i])
+            ++z[i];
+        if (i + z[i] - 1 > r)
+            l = i, r = i + z[i] - 1;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
 
 int main() {
     std::string s = "abacaba";
