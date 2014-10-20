@@ -1,0 +1,1 @@
+g++ check.cpp buffer.cpp node.cpp buffer_iterator.cpp buffer_const_iterator.cpp buffer_reverse_iterator.cpp buffer_const_reverse_iterator.cpp -o check.exe 2> err

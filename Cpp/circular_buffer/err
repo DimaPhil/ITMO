@@ -1,0 +1,77 @@
+buffer_iterator.cpp:8:1: error: prototype for 'buffer::iterator::iterator(int)' does not match any in class 'buffer::iterator'
+ buffer::iterator::iterator(int now) 
+ ^
+In file included from buffer_iterator.cpp:1:0:
+buffer.h:68:16: error: candidates are: buffer::iterator::iterator(const buffer::iterator&)
+ struct buffer::iterator 
+                ^
+buffer.h:81:3: error:                 buffer::iterator::iterator(buffer::node*)
+   iterator(node *now);
+   ^
+buffer_iterator.cpp:3:1: error:                 buffer::iterator::iterator()
+ buffer::iterator::iterator() 
+ ^
+buffer_iterator.cpp: In member function 'buffer::iterator& buffer::iterator::operator++()':
+buffer_iterator.cpp:20:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->next;
+             ^
+buffer_iterator.cpp: In member function 'buffer::iterator buffer::iterator::operator++(int)':
+buffer_iterator.cpp:27:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->next;
+             ^
+buffer_iterator.cpp: In member function 'buffer::iterator& buffer::iterator::operator--()':
+buffer_iterator.cpp:33:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->prev;
+             ^
+buffer_iterator.cpp: In member function 'buffer::iterator buffer::iterator::operator--(int)':
+buffer_iterator.cpp:40:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->prev;
+             ^
+buffer_const_iterator.cpp: In member function 'buffer::const_iterator& buffer::const_iterator::operator++()':
+buffer_const_iterator.cpp:20:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->next;
+             ^
+buffer_const_iterator.cpp: In member function 'buffer::const_iterator buffer::const_iterator::operator++(int)':
+buffer_const_iterator.cpp:27:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->next;
+             ^
+buffer_const_iterator.cpp: In member function 'buffer::const_iterator& buffer::const_iterator::operator--()':
+buffer_const_iterator.cpp:33:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->prev;
+             ^
+buffer_const_iterator.cpp: In member function 'buffer::const_iterator buffer::const_iterator::operator--(int)':
+buffer_const_iterator.cpp:40:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->prev;
+             ^
+buffer_reverse_iterator.cpp: In member function 'buffer::reverse_iterator& buffer::reverse_iterator::operator++()':
+buffer_reverse_iterator.cpp:22:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->prev;
+             ^
+buffer_reverse_iterator.cpp: In member function 'buffer::reverse_iterator buffer::reverse_iterator::operator++(int)':
+buffer_reverse_iterator.cpp:29:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->prev;
+             ^
+buffer_reverse_iterator.cpp: In member function 'buffer::reverse_iterator& buffer::reverse_iterator::operator--()':
+buffer_reverse_iterator.cpp:35:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->next;
+             ^
+buffer_reverse_iterator.cpp: In member function 'buffer::reverse_iterator buffer::reverse_iterator::operator--(int)':
+buffer_reverse_iterator.cpp:42:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->next;
+             ^
+buffer_const_reverse_iterator.cpp: In member function 'buffer::const_reverse_iterator& buffer::const_reverse_iterator::operator++()':
+buffer_const_reverse_iterator.cpp:22:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->prev;
+             ^
+buffer_const_reverse_iterator.cpp: In member function 'buffer::const_reverse_iterator buffer::const_reverse_iterator::operator++(int)':
+buffer_const_reverse_iterator.cpp:29:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->prev;
+             ^
+buffer_const_reverse_iterator.cpp: In member function 'buffer::const_reverse_iterator& buffer::const_reverse_iterator::operator--()':
+buffer_const_reverse_iterator.cpp:35:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->next;
+             ^
+buffer_const_reverse_iterator.cpp: In member function 'buffer::const_reverse_iterator buffer::const_reverse_iterator::operator--(int)':
+buffer_const_reverse_iterator.cpp:42:13: error: invalid conversion from 'int' to 'buffer::node*' [-fpermissive]
+   this->now = this->now->next;
+             ^
