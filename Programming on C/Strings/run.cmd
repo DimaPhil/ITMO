@@ -1,0 +1,1 @@
+g++ main.cpp my_string.cpp binary_string.cpp identificator_string.cpp -o main
