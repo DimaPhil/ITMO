@@ -49,7 +49,7 @@ const ll INFLONG = (ll)1e18;
 
 int main()
 {
-  #ifdef LocalHost
+  #ifndef ONLINE_JUDGE
     freopen(TASKNAME".in", "r", stdin);
     freopen(TASKNAME".out", "w", stdout);
   #endif

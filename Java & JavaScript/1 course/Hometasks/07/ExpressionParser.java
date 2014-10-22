@@ -119,7 +119,7 @@ public class ExpressionParser {
             if (c == expr.Mul) {
                 answer = new Multiply(answer, parseMultiplier());
             } else if (c == expr.Power) {
-                answer = new Power(	answer, parseMultiplier());
+                answer = new Power(answer, parseMultiplier());
             } else {
                 answer = new Divide(answer, parseMultiplier());
             }
