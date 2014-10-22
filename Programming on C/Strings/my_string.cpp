@@ -48,7 +48,7 @@ my_string::my_string(my_string &s) //конструктор от другой my_string
 
 my_string::~my_string() //деструктор
 {
-    delete begin;
+    //delete begin;
     print_console("my_string::~my_string()");
 }
 
