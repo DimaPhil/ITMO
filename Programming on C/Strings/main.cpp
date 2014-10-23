@@ -95,7 +95,7 @@ void processItem(int chosenItem)
         print_console("Enter the type of string - string, identificator or binary");
         char type[20];
         scanf("%s", type);
-        if (!strcmp(type, "string") && !strcmp(type, "identificator") && !strcmp(type, "binary"))
+        if (strcmp(type, "string") && strcmp(type, "identificator") && strcmp(type, "binary"))
         {
             print_console("Wrong type of string");
             wait_for_enter();
@@ -106,8 +106,8 @@ void processItem(int chosenItem)
         print_console("Enter value of string");
         char value[50];
         scanf("%s", value);
-        strings[index] = value;
-        printf("%s %s\n", types[index], strings[index].c_str());
+        my_string tt(value);
+        strings[index] = tt;
         wait_for_enter();
     }
 }

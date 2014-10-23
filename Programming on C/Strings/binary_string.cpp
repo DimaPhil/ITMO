@@ -16,8 +16,8 @@ bool binary_string::is_binary(char* str)
 int binary_string::to_int()
 {
     int number = 0;
-    for (int i = 0; begin[i] != '0'; i++)
-        number = number * 2 + (begin[i] - '0');
+    for (int i = 0; str[i] != '0'; i++)
+        number = number * 2 + (str[i] - '0');
     return number;
 }
 
@@ -28,15 +28,15 @@ binary_string::binary_string()
 
 binary_string::binary_string(char *s) : my_string(s)
 {
-    print_console("binary_string::binary_string(char*)");
-    if(!is_binary(begin)) 
+    printf("binary_string::binary_string(char* %s)", s);
+    if(!is_binary(str)) 
         clear();
 }
 
 binary_string::binary_string(binary_string &s) : my_string(s)
 {
-    print_console("binary_string::binary_string(binary_string&)");
-    if(!is_binary(begin)) {
+    printf("binary_string::binary_string(binary_string& %s)", s.c_str());
+    if(!is_binary(str)) {
         clear();
     }
 }
@@ -50,17 +50,17 @@ void binary_string::invert()
 {
     print_console("binary_string::invert()");
     for(int i = 0;i < len; i++)
-        begin[i] = (begin[i] == '1') ? '0' : '1';
+        str[i] = (str[i] == '1') ? '0' : '1';
 }
 
 binary_string* binary_string::operator = (char *s)
 {
-    print_console("binary_string::operator = (char*)");
+    printf("binary_string::operator = (char* %s)", s);
     if(is_binary(s)) {
-        delete begin;
-        begin = new char[len + 1];
-        strcpy(begin, s);
-        begin[len] = 0;
+        delete str;
+        str = new char[len + 1];
+        strcpy(str, s);
+        str[len] = 0;
         return this;
     } else {
         clear();
@@ -70,7 +70,7 @@ binary_string* binary_string::operator = (char *s)
 
 bool binary_string::operator < (binary_string &b)
 {
-    print_console("binary_string::operator <");
+    printf("binary_string::operator < (binary_string& %s)", b.c_str());
     int this_value = this->to_int();
     int b_value = b.to_int();
     return this_value < b_value;
@@ -78,5 +78,5 @@ bool binary_string::operator < (binary_string &b)
 
 binary_string* binary_string::operator - (binary_string &b)
 {
-    print_console("binary_string::operator -");
+    printf("binary_string::operator - (binary_string& %s)\n", b.c_str());
 }

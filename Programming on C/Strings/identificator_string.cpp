@@ -35,21 +35,21 @@ identificator_string::identificator_string() : my_string()
 
 identificator_string::identificator_string(char c): my_string(c)
 {
-    print_console("identificator_string::identificator_string(char c)");
-    if (!is_identificator(begin))
+    printf("identificator_string::identificator_string(char %c)", c);
+    if (!is_identificator(str))
         clear();
 }
 
 identificator_string::identificator_string(char *s) : my_string(s)
 {
-    print_console("identificator_string::identificator_string(char *s)");
+    printf("identificator_string::identificator_string(char* %s)", s);
     if (!is_identificator(s))
         clear();
 }
 
 identificator_string::identificator_string(identificator_string &s) : my_string(s)
 {
-    if (!is_identificator(begin))
+    if (!is_identificator(str))
         clear();
 }
 
@@ -60,13 +60,13 @@ identificator_string::~identificator_string()
 
 identificator_string* identificator_string::operator = (char *s)
 {
-    print_console("identificator_string::operator = (char *s)");
-    delete begin;
+    printf("identificator_string::operator = (char* %s)", s);
+    delete str;
     len = strlen(s);
-    begin = new char[len + 1];
-    strcpy(begin, s);
-    begin[len] = 0;
-    if (!is_identificator(begin))
+    str = new char[len + 1];
+    strcpy(str, s);
+    str[len] = 0;
+    if (!is_identificator(str))
     {
         print_console("source is not identificator");
         clear();
@@ -76,25 +76,25 @@ identificator_string* identificator_string::operator = (char *s)
 
 char identificator_string::operator [] (int i)
 {
-    print_console("identificator_string::operator [] (int i)");
-    if (i < 0 || i >= (int)strlen(begin)) 
+    printf("identificator_string::operator [] (%d)", i);
+    if (i < 0 || i >= (int)strlen(str)) 
     {
         print_console("Out of bounds");
         return 0;
     }
-    return begin[i];
+    return str[i];
 }
 
 bool identificator_string::operator < (identificator_string &id)
 {
-    print_console("identificator_string::operator < (identificator_string *id)");
+    printf("identificator_string::operator < (identificator_string* %s)", id.c_str());
     int this_length = len;
     int id_length = id.len;
     for (int i = 0; i < std::min(len, id.len); i++) 
     {
-        if (begin[i] < id.begin[i])
+        if (str[i] < id.str[i])
             return true;
-        if (begin[i] > id.begin[i])
+        if (str[i] > id.str[i])
             return false;
     }
     if (this_length < id_length)

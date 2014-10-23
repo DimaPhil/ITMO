@@ -10,7 +10,7 @@
 class my_string
 {
 protected:
-    char *begin;
+    char *str;
     int len;
 public:
     //конструкторы
@@ -19,11 +19,13 @@ public:
     my_string(char);
     my_string(my_string& str);
 
-    //декструктор
+    //деструктор
     ~my_string();
 
     char* c_str();
     void clear();
     int length();
+
+    my_string& operator = (my_string &s);
 };
 #endif
