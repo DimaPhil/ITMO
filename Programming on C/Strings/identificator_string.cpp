@@ -6,13 +6,13 @@ bool identificator_string::is_identificator(char* s)
     int len = strlen(s);
     if (len == 0)
     {
-        print_console("empty string is wrong name for identificator");
+        printf("empty string is wrong name for identificator");
         return false;
     }
 
     if (len == 1 && s[0] == '_')
     {
-        print_console("_ is wrong name for identificator");
+        printf("_ is wrong name for identificator");
         return false;
     }
 
@@ -20,7 +20,7 @@ bool identificator_string::is_identificator(char* s)
     {
         if (!isalpha(s[i]) && !isdigit(s[i]) && s[i] != '_')
         {
-            print_console("wrong name for identificator");
+            printf("wrong name for identificator");
             return false;
         }
     }
@@ -30,7 +30,7 @@ bool identificator_string::is_identificator(char* s)
 
 identificator_string::identificator_string() : my_string()
 {
-    print_console("identificator_string::identificator_string()");
+    printf("identificator_string::identificator_string()");
 }
 
 identificator_string::identificator_string(char c): my_string(c)
@@ -55,7 +55,7 @@ identificator_string::identificator_string(identificator_string &s) : my_string(
 
 identificator_string::~identificator_string()
 {
-    print_console("identificator_string::~identificator_string()");
+    printf("identificator_string::~identificator_string()");
 }
 
 identificator_string* identificator_string::operator = (char *s)
@@ -64,11 +64,11 @@ identificator_string* identificator_string::operator = (char *s)
     delete str;
     len = strlen(s);
     str = new char[len + 1];
-    strcpy(str, s);
-    str[len] = 0;
+    for (int i = 0; i <= len; i++)
+        str[i] = s[i];
     if (!is_identificator(str))
     {
-        print_console("source is not identificator");
+        printf("source is not identificator");
         clear();
     }
     return this;
@@ -79,7 +79,7 @@ char identificator_string::operator [] (int i)
     printf("identificator_string::operator [] (%d)", i);
     if (i < 0 || i >= (int)strlen(str)) 
     {
-        print_console("Out of bounds");
+        printf("Out of bounds");
         return 0;
     }
     return str[i];
