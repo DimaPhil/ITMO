@@ -17,6 +17,7 @@ public:
     ~binary_string();
     
     //описание публичных функций
+    int sign();
     void invert();
     bool operator < (binary_string&);
     

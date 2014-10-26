@@ -13,6 +13,8 @@ public:
 
     ~identificator_string();
 
+    int find_last(char c);
+
     identificator_string* operator = (char*);
     bool operator < (identificator_string&);
     char operator [](int);

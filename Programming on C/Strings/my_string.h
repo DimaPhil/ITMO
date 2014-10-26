@@ -25,7 +25,9 @@ public:
     char* c_str();
     void clear();
     int length();
-
-    my_string& operator = (my_string &s);
+    
+    char operator [](int);
+    my_string& operator = (my_string &);
 };
+
 #endif

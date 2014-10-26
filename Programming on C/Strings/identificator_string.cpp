@@ -6,13 +6,13 @@ bool identificator_string::is_identificator(char* s)
     int len = strlen(s);
     if (len == 0)
     {
-        printf("empty string is wrong name for identificator");
+        printf("Empty string is wrong name for identificator\n");
         return false;
     }
 
-    if (len == 1 && s[0] == '_')
+    if (!isalpha(s[0]))
     {
-        printf("_ is wrong name for identificator");
+        printf("Wrong first symbol\n");
         return false;
     }
 
@@ -20,7 +20,7 @@ bool identificator_string::is_identificator(char* s)
     {
         if (!isalpha(s[i]) && !isdigit(s[i]) && s[i] != '_')
         {
-            printf("wrong name for identificator");
+            printf("Wrong name for identificator\n");
             return false;
         }
     }
@@ -30,19 +30,19 @@ bool identificator_string::is_identificator(char* s)
 
 identificator_string::identificator_string() : my_string()
 {
-    printf("identificator_string::identificator_string()");
+    printf("identificator_string::identificator_string()\n");
 }
 
 identificator_string::identificator_string(char c): my_string(c)
 {
-    printf("identificator_string::identificator_string(char %c)", c);
+    printf("identificator_string::identificator_string(char %c)\n", c);
     if (!is_identificator(str))
         clear();
 }
 
 identificator_string::identificator_string(char *s) : my_string(s)
 {
-    printf("identificator_string::identificator_string(char* %s)", s);
+    printf("identificator_string::identificator_string(char* %s)\n", s);
     if (!is_identificator(s))
         clear();
 }
@@ -55,12 +55,22 @@ identificator_string::identificator_string(identificator_string &s) : my_string(
 
 identificator_string::~identificator_string()
 {
-    printf("identificator_string::~identificator_string()");
+    printf("identificator_string::~identificator_string()\n");
+}
+
+int identificator_string::find_last(char c) 
+{
+    printf("my_string::find_last(my_string %s, char %c)\n", str, c);
+    int ans = -1;
+    for (int i = 0; str[i] != 0; i++)
+        if (str[i] == c)
+            ans = i;
+    return ans;
 }
 
 identificator_string* identificator_string::operator = (char *s)
 {
-    printf("identificator_string::operator = (char* %s)", s);
+    printf("identificator_string::operator = (char* %s)\n", s);
     delete str;
     len = strlen(s);
     str = new char[len + 1];
@@ -68,7 +78,7 @@ identificator_string* identificator_string::operator = (char *s)
         str[i] = s[i];
     if (!is_identificator(str))
     {
-        printf("source is not identificator");
+        printf("source is not identificator\n");
         clear();
     }
     return this;
@@ -76,7 +86,7 @@ identificator_string* identificator_string::operator = (char *s)
 
 char identificator_string::operator [] (int i)
 {
-    printf("identificator_string::operator [] (%d)", i);
+    printf("identificator_string::operator [] (%d)\n", i);
     if (i < 0 || i >= (int)strlen(str)) 
     {
         printf("Out of bounds");
@@ -87,7 +97,7 @@ char identificator_string::operator [] (int i)
 
 bool identificator_string::operator < (identificator_string &id)
 {
-    printf("identificator_string::operator < (identificator_string* %s)", id.c_str());
+    printf("identificator_string::operator < (identificator_string* %s)\n", id.c_str());
     int this_length = len;
     int id_length = id.len;
     for (int i = 0; i < std::min(len, id.len); i++) 

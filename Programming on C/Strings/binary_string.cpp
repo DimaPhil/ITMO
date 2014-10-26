@@ -25,19 +25,30 @@ int binary_string::to_int()
 
 binary_string::binary_string()
 {
-    printf("binary_string::binary_string()");
+    printf("binary_string::binary_string()\n");
 }
 
-binary_string::binary_string(char *s) : my_string(s)
+binary_string::binary_string(char *s)
 {
-    printf("binary_string::binary_string(char* %s)", s);
-    if (!is_binary(str)) 
+    printf("binary_string::binary_string(char* %s)\n", s);
+    if (!is_binary(str))
+    {
         clear();
+        return;
+    }
+    str = new char[33];
+    str[32] = 0;
+    int len = strlen(s);
+    int now = 31;
+    for (int i = len - 1; i >= 0; i--)
+        str[now--] = s[i];
+    for (int i = now; i >= 0; i--)
+        str[i] = '0';
 }
 
 binary_string::binary_string(binary_string &s) : my_string(s)
 {
-    printf("binary_string::binary_string(binary_string& %s)", s.c_str());
+    printf("binary_string::binary_string(binary_string& %s)\n", s.c_str());
     if (!is_binary(str)) {
         clear();
     }
@@ -45,19 +56,31 @@ binary_string::binary_string(binary_string &s) : my_string(s)
 
 binary_string::~binary_string()
 {
-    printf("binary_string::~binary_string()");
+    printf("binary_string::~binary_string()\n");
 }
 
 void binary_string::invert()
 {
-    printf("binary_string::invert()");
+    printf("binary_string::invert()\n");
     for(int i = 0;i < len; i++)
         str[i] = (str[i] == '1') ? '0' : '1';
 }
 
+int binary_string::sign()
+{
+    printf("binary_string::sign()\n");
+    if (str[0] == '1')
+        return -1;
+    bool is_zero = true;
+    for (int i = 0; str[i] != 0; i++)
+        if (str[i] == '1')
+            is_zero = false;
+    return is_zero ? 0 : 1;
+}
+
 binary_string* binary_string::operator = (char *s)
 {
-    printf("binary_string::operator = (char* %s)", s);
+    printf("binary_string::operator = (char* %s)\n", s);
     if(is_binary(s)) {
         delete str;
         str = new char[len + 1];
@@ -72,7 +95,7 @@ binary_string* binary_string::operator = (char *s)
 
 bool binary_string::operator < (binary_string &b)
 {
-    printf("binary_string::operator < (binary_string& %s)", b.c_str());
+    printf("binary_string::operator < (binary_string& %s)\n", b.c_str());
     int this_value = this->to_int();
     int b_value = b.to_int();
     return this_value < b_value;
