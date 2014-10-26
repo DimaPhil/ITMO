@@ -31,12 +31,13 @@ binary_string::binary_string()
 binary_string::binary_string(char *s)
 {
     printf("binary_string::binary_string(char* %s)\n", s);
-    if (!is_binary(str))
+    if (!is_binary(s))
     {
         clear();
         return;
     }
     str = new char[33];
+    len = 32;
     str[32] = 0;
     int len = strlen(s);
     int now = 31;
