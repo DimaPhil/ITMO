@@ -96,7 +96,7 @@ char identificator_string::operator [] (int i)
 }
 
 bool identificator_string::operator < (identificator_string &id)
-{
+{          
     printf("identificator_string::operator < (identificator_string* %s)\n", id.c_str());
     int this_length = len;
     int id_length = id.len;

@@ -41,13 +41,14 @@ my_string& my_string::operator = (my_string &s)
 {
     printf("my_string::operator = (my_string %s)\n", str);
     std::swap(str, s.str);
+    std::swap(len, s.len);
     return *this;
 }
 
 char my_string::operator [] (int i)
 {
     printf("my_string::operator [] (%s, %d)\n", str, i);
-    if (i < 0 || i >= len) 
+    if (i < 0 || i >= (int)strlen(str)) 
     {
         printf("Out of bounds");
         return 0;
@@ -59,7 +60,8 @@ my_string::my_string(my_string &s) //конструктор от другой my_string
 {
     printf("my_string::my_string(%s)\n", s.c_str());
     char *tmp = s.c_str();
-    int len = strlen(tmp);
+    len = strlen(tmp);
+    printf("LEN %d\n", len);
     str = new char[len + 1];
     for (int i = 0; i <= len; i++)
         str[i] = tmp[i];

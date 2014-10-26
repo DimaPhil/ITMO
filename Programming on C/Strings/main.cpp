@@ -36,13 +36,23 @@ void print_console(const char *s, ConsoleColor color)
     SetConsoleTextAttribute(hStdout, (WORD)((Black << 4) | White));
 }
 
+void print_console_no_enter(const char *s, ConsoleColor color) 
+{
+    SetConsoleTextAttribute(hStdout, (WORD)((Black << 4) | color));
+    printf("%s", s);
+    SetConsoleTextAttribute(hStdout, (WORD)((Black << 4) | White));
+}
+
+const char* TYPES[] = {"String", "Identificator", "Binary string"};
+
 bool was_number_of_elements_called = false;
 int elements_number = 0;
 my_string *strings;
-char **types;
+int *types;
 
 bool was_testing_called = false;
-bool was_operand_called = false;
+bool *changed;
+bool *initialized;
 int testing_type = 0;
 int testing_id = 0;
 
@@ -53,12 +63,54 @@ void wait_for_enter()
     getchar();
 }
 
+void printStrings()
+{
+    if (was_number_of_elements_called)
+    {
+        for (int i = 0; i < elements_number; i++)
+        {
+            printf("%d. ", i + 1);
+            if (!initialized[i]) {
+                puts("");
+                continue;
+            }
+            if (changed[i])
+            {
+                print_console_no_enter("Type: ", Green);
+                print_console_no_enter(TYPES[types[i]], Green);
+                print_console_no_enter(". String: ", Green);
+                print_console(strings[i].c_str(), Green);
+            }
+            else
+            {
+                print_console_no_enter("Type: ", White);
+                print_console_no_enter(TYPES[types[i]], White);
+                print_console_no_enter(". String: ", White);
+                print_console(strings[i].c_str(), White);
+            }
+        }
+    }
+    puts("\n");
+}
+
+int get_type(char *s) 
+{
+    identificator_string str(s);
+    if (str.length() != 0)
+        return 1;
+    binary_string str2(s);
+    if (str2.length() != 0)
+        return 2;
+    return 0;
+}
+
 void processItem(int chosenItem)
 {
     assert(chosenItem != 0 && chosenItem != 3); //not Initialization and not Testing
     system("CLS");
     if (chosenItem == 8) //Exit
         exit(0);
+    printStrings();
     if (chosenItem == 1) //Number of elements
     {
         if (was_number_of_elements_called) 
@@ -77,7 +129,11 @@ void processItem(int chosenItem)
         }
 
         strings = new my_string[elements_number];
-        types = new char*[elements_number];
+        types = new int[elements_number];
+        changed = new bool[elements_number];
+        initialized = new bool[elements_number];
+        for (int i = 0; i < elements_number; i++)
+            changed[i] = initialized[i] = false;
 
         was_number_of_elements_called = true;
         wait_for_enter();
@@ -111,25 +167,28 @@ void processItem(int chosenItem)
             wait_for_enter();
             return;
         }
-        types[index] = type;
 
         print_console("Enter value of string");
         char value[50];
         scanf("%s", value);
+        initialized[index] = true;
         if (!strcmp(type, "string"))
         {
             my_string tt(value);
             strings[index] = tt;
+            types[index] = 0;
         }
         if (!strcmp(type, "identificator"))
         {
             identificator_string tt(value);
             strings[index] = tt;
+            types[index] = 1;
         }
         if (!strcmp(type, "binary"))
         {
             binary_string tt(value);
             strings[index] = tt;
+            types[index] = 2;
         }
         wait_for_enter();
     }
@@ -201,22 +260,46 @@ void processItem(int chosenItem)
         {
             if (testing_id == 1)
             {
-                print_console("String. Method length(). Enter string:");
-                char str[50];
-                scanf("%s", str);
-                my_string s(str);
-                printf("length = %d\n", s.length());
+                print_console("String. Method length(). Enter id of string:");
+                int id;
+                scanf("%d", &id);
+                --id;
+                if (0 > id || id >= elements_number)
+                {
+                    print_console("Wrong id - out of bounds");
+                    wait_for_enter();
+                    return;
+                }
+                if (types[id] != testing_type)
+                {
+                    print_console("Wrong type of string was chosen");
+                    wait_for_enter();
+                    return;
+                }
+                printf("length = %d\n", strings[id].length());
             }
             if (testing_id == 2)
             {
-                print_console("String. Operator []. Enter string:");
-                char str[50];
-                scanf("%s", str);
-                my_string s(str);
+                print_console("String. Operator []. Enter id of string:");
+                int id;
+                scanf("%d", &id);
+                --id;
+                if (0 > id || id >= elements_number)
+                {
+                    print_console("Wrong id - out of bounds");
+                    wait_for_enter();
+                    return;
+                }
+                if (types[id] != testing_type)
+                {
+                    print_console("Wrong type of string was chosen");
+                    wait_for_enter();
+                    return;
+                }
                 print_console("Enter index of string:");
                 int index;
                 scanf("%d", &index);
-                printf("%c\n", s[index]);
+                printf("%c\n", strings[id][index]);
             }
             wait_for_enter();
         }
@@ -224,62 +307,136 @@ void processItem(int chosenItem)
         {
             if (testing_id == 1)
             {
-                print_console("Identificator string. Method length(). Enter string:");
-                char str[50];
-                scanf("%s", str);
-                identificator_string s(str);
-                printf("length = %d\n", s.length());
-            }
-            if (testing_id == 2)
-            {
-                print_console("Identificator string. Operator []. Enter string:");
-                char str[50];
-                scanf("%s", str);
-                identificator_string s(str);
-                print_console("Enter index of string:");
-                int index;
-                scanf("%d", &index);
-                printf("%c\n", s[index]);
-            }
-            if (testing_id == 3)
-            {
-                print_console("Indentificator string. Method \"find last position of symbol\". Enter string:");
-                char str[50];
-                scanf("%s", str);
-                identificator_string s(str);
-                print_console("Enter symbol:");
-                char c;
-                scanf("%c", &c);
-                printf("%d\n", s.find_last(c));
-            }
-            if (testing_id == 4)
-            {
-                print_console("Indentificator string. Operator =. Enter string:");
-                char str[50];
-                scanf("%s", str);
-                identificator_string s(str);
-                print_console("Enter index of your initialized strings:");
+                print_console("Identificator string. Method length(). Enter id of string:");
                 int id;
                 scanf("%d", &id);
-                if (0 >= id || id > elements_number)
+                --id;
+                if (0 > id || id >= elements_number)
                 {
-                    print_console("Wrong id");
+                    print_console("Wrong id - out of bounds");
                     wait_for_enter();
                     return;
                 }
-                //types[id] = ;
-                strings[id - 1] = s;
+                if (types[id] != testing_type)
+                {
+                    print_console("Wrong type of string was chosen");
+                    wait_for_enter();
+                    return;
+                }
+                printf("length = %d\n", strings[id].length());
+            }
+            if (testing_id == 2)
+            {
+                print_console("Identificator string. Operator []. Enter id of string:");
+                int id;
+                scanf("%d", &id);
+                --id;
+                if (0 > id || id >= elements_number)
+                {
+                    print_console("Wrong id - out of bounds");
+                    wait_for_enter();
+                    return;
+                }
+                if (types[id] != testing_type)
+                {
+                    print_console("Wrong type of string was chosen");
+                    wait_for_enter();
+                    return;
+                }
+                print_console("Enter index of string:");
+                int index;
+                scanf("%d", &index);
+                printf("%s\n", strings[id].c_str());
+                printf("%c\n", strings[id][index]);
+            }
+            if (testing_id == 3)
+            {
+                print_console("Identificator string. Method \"find last position of symbol\". Enter id of string:");
+                int id;
+                scanf("%d", &id);
+                --id;
+                if (0 > id || id >= elements_number)
+                {
+                    print_console("Wrong id - out of bounds");
+                    wait_for_enter();
+                    return;
+                }
+                if (types[id] != testing_type)
+                {
+                    print_console("Wrong type of string was chosen");
+                    wait_for_enter();
+                    return;
+                }
+                print_console("Enter symbol:");
+                char c;
+                while (scanf("%c", &c) >= 1)
+                {
+                    if (c != 13 && c != 10 && c != 32)
+                        break;
+                }
+                printf("Last symbol %c is at position %d\n", c, identificator_string(strings[id].c_str()).find_last(c));
+            }
+            if (testing_id == 4)
+            {
+                print_console("Identificator string. Operator =. Enter id of string:");
+                int id;
+                scanf("%d", &id);
+                --id;
+                if (0 > id || id >= elements_number)
+                {
+                    print_console("Wrong id - out of bounds");
+                    wait_for_enter();
+                    return;
+                }
+                if (types[id] != testing_type)
+                {
+                    print_console("Wrong type of string was chosen");
+                    wait_for_enter();
+                    return;
+                }
+                print_console("Enter string:");
+                char str[50];
+                scanf("%s", str);
+                if (get_type(str) != types[id])
+                {
+                    print_console("String has wrong type");
+                    wait_for_enter();
+                    return;
+                }
+                my_string A(str);
+                strings[id] = A;
+                changed[id] = true;
             }
             if (testing_id == 5)
             {
-                print_console("Indentificator string. Operator <. Enter string:");
+                print_console("Identificator string. Operator <. Enter id of string:");
+                int id;
+                scanf("%d", &id);
+                --id;
+                if (0 > id || id >= elements_number)
+                {
+                    print_console("Wrong id - out of bounds");
+                    wait_for_enter();
+                    return;
+                }
+                if (types[id] != testing_type)
+                {
+                    print_console("Wrong type of string was chosen");
+                    wait_for_enter();
+                    return;
+                }
+                print_console("Enter string:");
                 char str[50];
                 scanf("%s", str);
-                identificator_string s(str);
-                print_console("Enter another string:");
-                scanf("%s", str);
-                identificator_string t(str);
-                printf("Is %s less than %s? %s\n", s.c_str(), t.c_str(), s < t ? "Yes" : "No");
+                if (get_type(str) != types[id])
+                {
+                    print_console("String has wrong type");
+                    wait_for_enter();
+                    return;
+                }
+                identificator_string A(strings[id].c_str());
+                identificator_string B(str);
+                printf("Is %s less than %s? %s\n", strings[id].c_str(), str, A < B ? "Yes" : "No");
             }
             wait_for_enter();
         }
@@ -287,46 +444,100 @@ void processItem(int chosenItem)
         {
             if (testing_id == 1)
             {
-                print_console("Binary string. Method sign(). Enter string:");
-                char str[50];
-                scanf("%s", str);
-                binary_string s(str);
-                printf("sign = %d\n", s.sign());
+                print_console("Binary string. Method sign(). Enter id of string:");
+                int id;
+                scanf("%d", &id);
+                --id;
+                if (0 > id || id >= elements_number)
+                {
+                    print_console("Wrong id - out of bounds");
+                    wait_for_enter();
+                    return;
+                }
+                if (types[id] != testing_type)
+                {
+                    print_console("Wrong type of string was chosen");
+                    wait_for_enter();
+                    return;
+                }
+                printf("sign = %d\n", binary_string(strings[id].c_str()).sign());
             }
             if (testing_id == 2)
             {
-                print_console("Binary string. Operator []. Enter string:");
-                char str[50];
-                scanf("%s", str);
-                binary_string s(str);
+                print_console("Binary string. Operator []. Enter id of string:");
+                int id;
+                scanf("%d", &id);
+                --id;
+                if (0 > id || id >= elements_number)
+                {
+                    print_console("Wrong id - out of bounds");
+                    wait_for_enter();
+                    return;
+                }
+                if (types[id] != testing_type)
+                {
+                    print_console("Wrong type of string was chosen");
+                    wait_for_enter();
+                    return;
+                }
                 print_console("Enter index of string:");
                 int index;
                 scanf("%d", &index);
-                printf("%c\n", s[index]);
+                printf("%c\n", strings[id][index]);
             }
             if (testing_id == 3)
             {
-                print_console("Binary string. Operator <. Enter string:");
+                print_console("Binary string. Operator <. Enter id of string:");
+                int id;
+                scanf("%d", &id);
+                --id;
+                if (0 > id || id >= elements_number)
+                {
+                    print_console("Wrong id - out of bounds");
+                    wait_for_enter();
+                    return;
+                }
+                if (types[id] != testing_type)
+                {
+                    print_console("Wrong type of string was chosen");
+                    wait_for_enter();
+                    return;
+                }
+                print_console("Enter string:");
                 char str[50];
                 scanf("%s", str);
-                binary_string s(str);
-                print_console("Enter another string:");
-                scanf("%s", str);
-                binary_string t(str);
-                printf("Is %s less than %s? %s\n", s.c_str(), t.c_str(), s < t ? "Yes" : "No");
+                binary_string A(strings[id].c_str());
+                binary_string B(str);
+                printf("Is %s less than %s? %s\n", A.c_str(), B.c_str(), A < B ? "Yes" : "No");
             }
             if (testing_id == 4)
             {
-                print_console("Binary string. Operator -. Enter string:");
+                print_console("Binary string. Operator -. Enter id of string:");
+                int id;
+                scanf("%d", &id);
+                --id;
+                if (0 > id || id >= elements_number)
+                {
+                    print_console("Wrong id - out of bounds");
+                    wait_for_enter();
+                    return;
+                }
+                if (types[id] != testing_type)
+                {
+                    print_console("Wrong type of string was chosen");
+                    wait_for_enter();
+                    return;
+                }
+                print_console("Enter string:");
                 char str[50];
                 scanf("%s", str);
-                binary_string s(str);
-                print_console("Enter another string:");
-                scanf("%s", str);
-                binary_string t(str);
-                printf("%s - %s is equal to %s\n", s.c_str(), t.c_str(), (s - t)->c_str());
+                binary_string A(strings[id].c_str());
+                binary_string B(str);
+                binary_string *result = A - B;
+                printf("%s - %s is equal to %s\n", A.c_str(), B.c_str(), result->c_str());
+                strings[id] = *result;
+                changed[id] = true;
             }
-
             wait_for_enter();
         }
     }
@@ -389,17 +600,7 @@ void printMenu()
         }
     }
     puts("");
-    if (was_number_of_elements_called)
-    {
-        for (int i = 0; i < elements_number; i++)
-        {
-            printf("%d. ", i + 1);
-            if (was_operand_called)
-                print_console(strings[i].c_str(), Green);
-            else
-                print_console(strings[i].c_str(), White);
-        }
-    }
+    printStrings();
 }
  
 int main() 

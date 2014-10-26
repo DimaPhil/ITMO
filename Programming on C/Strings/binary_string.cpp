@@ -84,6 +84,7 @@ binary_string* binary_string::operator = (char *s)
     printf("binary_string::operator = (char* %s)\n", s);
     if(is_binary(s)) {
         delete str;
+        len = strlen(s);
         str = new char[len + 1];
         for (int i = 0; i <= len; i++)
             str[i] = s[i];
@@ -108,9 +109,11 @@ binary_string* binary_string::operator - (binary_string &b)
     int this_value = this->to_int();
     int b_value = b.to_int();
 
+    printf("%d %d\n", this_value, b_value);
     int x = this_value - b_value;
     
     str = new char[33];
+    len = 32;
     bool sign = x >= 0;
     x = abs(x);
     int i = 1;
