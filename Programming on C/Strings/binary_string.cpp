@@ -104,7 +104,7 @@ bool binary_string::operator < (binary_string &b)
 
 binary_string* binary_string::operator - (binary_string &b)
 {
-    printf("binary_string::operator - (binary_string& %s)\n", b.c_str());
+    printf("binary_string::operator - (binary_string %s, binary_string %s)\n", str, b.c_str());
     int this_value = this->to_int();
     int b_value = b.to_int();
 
@@ -114,11 +114,14 @@ binary_string* binary_string::operator - (binary_string &b)
     bool sign = x >= 0;
     x = abs(x);
     int i = 1;
+    str[0] = '0';
     while (x > 0) {
         int digit = x % 2;
         str[i++] = char(digit + '0');
         x /= 2;
-    }
+    }             
+    for (int j = i; j < 32; j++)
+        str[j] = '0';
     str[32] = 0;
     std::reverse(str + 1, str + 32);
     if (!sign) {
