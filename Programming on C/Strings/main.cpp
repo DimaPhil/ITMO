@@ -51,7 +51,7 @@ my_string *strings;
 int *types;
 
 bool was_testing_called = false;
-bool *changed;
+int changed = -1;
 bool *initialized;
 int testing_type = 0;
 int testing_id = 0;
@@ -74,7 +74,7 @@ void printStrings()
                 puts("");
                 continue;
             }
-            if (changed[i])
+            if (changed == i)
             {
                 print_console_no_enter("Type: ", Green);
                 print_console_no_enter(TYPES[types[i]], Green);
@@ -130,10 +130,10 @@ void processItem(int chosenItem)
 
         strings = new my_string[elements_number];
         types = new int[elements_number];
-        changed = new bool[elements_number];
+        changed = -1;
         initialized = new bool[elements_number];
         for (int i = 0; i < elements_number; i++)
-            changed[i] = initialized[i] = false;
+            initialized[i] = false;
 
         was_number_of_elements_called = true;
         wait_for_enter();
@@ -405,7 +405,7 @@ void processItem(int chosenItem)
                 }
                 my_string A(str);
                 strings[id] = A;
-                changed[id] = true;
+                changed = id;
             }
             if (testing_id == 5)
             {
@@ -425,18 +425,25 @@ void processItem(int chosenItem)
                     wait_for_enter();
                     return;
                 }
-                print_console("Enter string:");
-                char str[50];
-                scanf("%s", str);
-                if (get_type(str) != types[id])
+                print_console("Enter id of another string:");
+                int id2;
+                scanf("%d", &id2);
+                --id2;
+                if (0 > id2 || id2 >= elements_number)
                 {
-                    print_console("String has wrong type");
+                    print_console("Wrong id - out of bounds");
+                    wait_for_enter();
+                    return;
+                }
+                if (types[id2] != testing_type)
+                {
+                    print_console("Wrong type of string was chosen");
                     wait_for_enter();
                     return;
                 }
                 identificator_string A(strings[id].c_str());
-                identificator_string B(str);
-                printf("Is %s less than %s? %s\n", strings[id].c_str(), str, A < B ? "Yes" : "No");
+                identificator_string B(strings[id2].c_str());
+                printf("Is %s less than %s? %s\n", A.c_str(), B.c_str(), A < B ? "Yes" : "No");
             }
             wait_for_enter();
         }
@@ -503,11 +510,24 @@ void processItem(int chosenItem)
                     wait_for_enter();
                     return;
                 }
-                print_console("Enter string:");
-                char str[50];
-                scanf("%s", str);
+                print_console("Enter id of another string:");
+                int id2;
+                scanf("%d", &id2);
+                --id2;
+                if (0 > id2 || id2 >= elements_number)
+                {
+                    print_console("Wrong id - out of bounds");
+                    wait_for_enter();
+                    return;
+                }
+                if (types[id2] != testing_type)
+                {
+                    print_console("Wrong type of string was chosen");
+                    wait_for_enter();
+                    return;
+                }
                 binary_string A(strings[id].c_str());
-                binary_string B(str);
+                binary_string B(strings[id2].c_str());
                 printf("Is %s less than %s? %s\n", A.c_str(), B.c_str(), A < B ? "Yes" : "No");
             }
             if (testing_id == 4)
@@ -528,15 +548,28 @@ void processItem(int chosenItem)
                     wait_for_enter();
                     return;
                 }
-                print_console("Enter string:");
-                char str[50];
-                scanf("%s", str);
+                print_console("Enter id of another string:");
+                int id2;
+                scanf("%d", &id2);
+                --id2;
+                if (0 > id2 || id2 >= elements_number)
+                {
+                    print_console("Wrong id - out of bounds");
+                    wait_for_enter();
+                    return;
+                }
+                if (types[id2] != testing_type)
+                {
+                    print_console("Wrong type of string was chosen");
+                    wait_for_enter();
+                    return;
+                }
                 binary_string A(strings[id].c_str());
-                binary_string B(str);
+                binary_string B(strings[id2].c_str());
                 binary_string *result = A - B;
                 printf("%s - %s is equal to %s\n", A.c_str(), B.c_str(), result->c_str());
                 strings[id] = *result;
-                changed[id] = true;
+                changed = id;
             }
             wait_for_enter();
         }
