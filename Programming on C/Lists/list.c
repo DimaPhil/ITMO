@@ -93,6 +93,7 @@ void deleteByIndex(Node **begin, int k, int *oldData)
         return;
     if (oldData != NULL)
         *oldData = nowBegin->data;
+    free(nowBegin);
 
     if (lastElement == NULL)
     {
@@ -102,7 +103,6 @@ void deleteByIndex(Node **begin, int k, int *oldData)
     {
         lastElement->next = nextElement;
     }
-    free(nowBegin);
 }
  
 void printList(Node *begin)

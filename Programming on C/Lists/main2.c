@@ -11,7 +11,7 @@ void main(void)
         printf("Enter type of operation:\n");
         int type;
         scanf("%i", &type);
-        int x;
+        int x, k, tmp;
         int *y = malloc(sizeof(int));
         switch (type)
         {
@@ -22,12 +22,12 @@ void main(void)
             case 1:
                 scanf("%i", &x);
                 if (!addToBegin(&begin, x))
-                    printf("Not enough memory");
+                    printf("Not enough memory\n");
                 break;
             case 2:
                 scanf("%i", &x);
                 if (!addToEnd(&begin, x))
-                    printf("Not enough memory");
+                    printf("Not enough memory\n");
                 break;
             case 3:
                 deleteFromBegin(&begin, y);
@@ -41,6 +41,22 @@ void main(void)
                 scanf("%i", &x);
                 deleteByIndex(&begin, x, y);
                 printf("Deleted element: %i\n", *y);
+                break;
+            case 6:
+                scanf("%i%i", &k, &x);
+                tmp = addByIndex(&begin, k, x);
+                if (tmp == 0)
+                    printf("Not enough memory\n");
+                if (tmp == 2)
+                    printf("lalala\n");         
+                break;
+            case 7:
+                deleteFromEnd(&begin, y);
+                addToBegin(&begin, *y);
+                break;
+            case 8:
+                deleteFromBegin(&begin, y);
+                addToEnd(&begin, *y);
                 break;
             default:
                 break;

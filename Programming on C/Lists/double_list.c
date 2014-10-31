@@ -14,7 +14,7 @@ int addToBegin(Node **begin, int newData)
     Node *nextElement = (*begin)->next;
     if (nextElement != NULL)
         nextElement->prev = *begin;
-    return 1;
+    return 1;               
 }
  
 void deleteFromBegin(Node **begin, int *oldData)
@@ -56,6 +56,14 @@ void deleteFromEnd(Node **begin, int *oldData)
         free(nowBegin);
     }
 }
+
+//int addToEnd(Node **begin, char *newData)
+//{
+//newElement->data = newData; //error
+//int len = strlen(newData), i;
+//for (i = 0; i <= len; i++)
+//newElement->data[i] = newData[i];
+//}
  
 int addToEnd(Node **begin, int newData)
 {
@@ -79,6 +87,45 @@ int addToEnd(Node **begin, int newData)
        newElement->prev = nowBegin;
    }
    return 1;
+}
+
+int addByIndex(Node **begin, int k, int newData)
+{
+    if (k == -1)
+    {
+        return addToBegin(begin, newData);
+    }
+
+    Node *newElement = malloc(sizeof(Node));
+    if (newElement == NULL)
+        return 0;
+    newElement->next = NULL;
+    newElement->prev = NULL;
+    newElement->data = newData;
+
+    Node *nowBegin = *begin;
+    Node *nextElement;
+    if (nowBegin != NULL)
+        nextElement = nowBegin->next;
+    else
+        nextElement = NULL;
+    int i;
+    for (i = 0; i < k; i++)
+    {
+        if (nowBegin != NULL)
+            nowBegin = nowBegin->next;
+        if (nextElement != NULL)
+            nextElement = nextElement->next;
+    }
+    if (nowBegin == NULL)
+        return 2;
+
+    nowBegin->next = newElement;
+    newElement->next = nextElement;
+    newElement->prev = nowBegin;
+    if (nextElement != NULL)
+        nextElement->prev = newElement;
+    return 1;
 }
 
 void deleteByIndex(Node **begin, int k, int *oldData)

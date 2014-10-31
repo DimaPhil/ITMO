@@ -15,3 +15,4 @@ void printList(Node *begin);
 void printListFromEnd(Node *begin);
 void freeList(Node *begin);
 void deleteByIndex(Node **begin, int k, int *oldData);
+int addByIndex(Node **begin, int k, int newData);
