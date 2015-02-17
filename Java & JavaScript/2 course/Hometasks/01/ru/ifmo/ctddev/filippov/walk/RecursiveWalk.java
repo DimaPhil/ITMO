@@ -14,9 +14,9 @@ public class RecursiveWalk {
         
         public long hashCode(String fileName) throws FileNotFoundException {
             FileInputStream fileStream = new FileInputStream(new File(fileName));
-            int c;
-            long hash = 0;
             try {
+                int c;
+                long hash = 0;
                 while ((c = fileStream.read()) >= 0) {
                     hash = ((hash * p) ^ c) & mod;
                 }
@@ -41,6 +41,9 @@ public class RecursiveWalk {
             final FNVHasher hasher = new FNVHasher();
             while (reader.hasNextLine()) {
                 Path start = Paths.get(reader.nextLine());
+                if (!Files.exists(start)) {
+                    continue;
+                }
                 try {
                     Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
                         @Override
