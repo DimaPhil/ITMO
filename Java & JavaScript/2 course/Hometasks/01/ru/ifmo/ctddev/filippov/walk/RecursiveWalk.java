@@ -38,10 +38,10 @@ public class RecursiveWalk {
             final Writer writer = new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8.toString())) {
             while (reader.hasNextLine()) {
                 Path start = Paths.get(reader.nextLine());
-                if (!Files.exists(start)) {
+                /*if (!Files.exists(start)) {
                     writer.write(String.format("00000000 %s\n", start.toString()));
                     continue;
-                }
+                }*/
                 try {
                     Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
                         @Override
@@ -52,7 +52,13 @@ public class RecursiveWalk {
                         }
                         
                         @Override
-                        public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
+                        public FileVisitResult visitFileFailed(Path file, IOException e) throws IOException {
+                            writer.write(String.format("%08x %s\n", 0, file.toString()));
+                            return FileVisitResult.CONTINUE;
+                        }
+                        
+                        @Override
+                        public FileVisitResult postVisitDirectory(Path dir, IOException e) {
                             if (e == null) {
                                 return FileVisitResult.CONTINUE;
                             } else {
@@ -68,7 +74,7 @@ public class RecursiveWalk {
             System.out.println("No such input file: " + inputFile);
             return;
         } catch (IOException e) {
-            System.out.println("Can\'t close output file");
+            System.out.println("IOException: %s" + e.getMessage());
             return;
         }
     }
