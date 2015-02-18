@@ -14,9 +14,9 @@ public class RecursiveWalk {
         
         public long hashCode(String fileName) throws FileNotFoundException {
             FileInputStream fileStream = new FileInputStream(new File(fileName));
+            long hash = 0;
             try {
                 int c;
-                long hash = 0;
                 while ((c = fileStream.read()) >= 0) {
                     hash = ((hash * p) ^ c) & mod;
                 }
