@@ -12,30 +12,33 @@ public class RecursiveWalk {
         private static final int x0 = (int)2166136261L;
         
         public static int hashCode(String fileName) throws FileNotFoundException {
-            FileInputStream fileStream = new FileInputStream(new File(fileName));
+            try (BufferedInputStream fileStream = new BufferedInputStream(new FileInputStream(new File(fileName)))) {
             int hash = x0;
-            try {
                 int c;
                 while ((c = fileStream.read()) >= 0) {
                     hash = (hash * p) ^ c;
                 }
+                return hash;
             } catch (IOException e) {
                 return 0;
             }
-            return hash;
         }
     }
     
     public void run(String[] args) {
-        if (args.length < 2) {
-            System.out.println("Not enough arguments - need 2, found " + args.length);
+        if (args == null || args.length != 2) {
+            System.out.println("Usage: java RecursiveWalk <input file> <output file>");
             return;
         }
-        String inputFile = args[0];
-        String outputFile = args[1];
+        if (args[0] == null && args[1] == null) {
+            System.out.println("Some arguments are equal null - very bad :(");
+            return;
+        }
+        String inputFileName = args[0];
+        String outputFileName = args[1];
         
-        try (Scanner reader = new Scanner(new File(inputFile), StandardCharsets.UTF_8.toString());
-            final Writer writer = new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8.toString())) {
+        try (Scanner reader = new Scanner(new File(inputFileName), StandardCharsets.UTF_8.toString());
+            final Writer writer = new OutputStreamWriter(new FileOutputStream(outputFileName), StandardCharsets.UTF_8.toString())) {
             while (reader.hasNextLine()) {
                 Path start = Paths.get(reader.nextLine());
                 try {
@@ -63,14 +66,14 @@ public class RecursiveWalk {
                         }
                     });
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println("IOException raised while walking throw file tree: " + e.getMessage());                
                 }                
             }
         } catch (FileNotFoundException e) {
-            System.out.println("No such input file: " + inputFile);
+            System.out.println(e.toString());
             return;
         } catch (IOException e) {
-            System.out.println("IOException: %s" + e.getMessage());
+            System.out.println(e.toString());
             return;
         }
     }
