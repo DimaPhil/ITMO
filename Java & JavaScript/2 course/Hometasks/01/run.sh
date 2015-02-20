@@ -1,0 +1,1 @@
+java -cp .:ru/ifmo/ctddev/filippov/walk/WalkTest.jar:ru/ifmo/ctddev/filippov/walk/hamcrest-core-1.3.jar:ru/ifmo/ctddev/filippov/walk/junit-4.11.jar:ru/ifmo/ctddev/filippov/walk/quickcheck-0.6.jar info.kgeorgiy.java.advanced.walk.Tester RecursiveWalk ru.ifmo.ctddev.filippov.walk.RecursiveWalk
