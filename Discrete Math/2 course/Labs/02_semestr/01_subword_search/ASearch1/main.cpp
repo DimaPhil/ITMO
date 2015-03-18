@@ -1,0 +1,27 @@
+#include <bits/stdc++.h>
+
+const int maxn = 1e4 + 100;
+
+char s[maxn], t[maxn];
+
+int main() {
+    freopen("search1.in", "r", stdin);
+    freopen("search1.out", "w", stdout);
+    gets(s);
+    gets(t);
+    int lens = strlen(s);
+    int lent = strlen(t);
+    std::vector <int> result;
+    for (int i = 0; i <= lent - lens; i++) {
+        bool ok = true;
+        for (int j = 0; j < lens; j++)
+            ok &= s[j] == t[i + j];
+        if (ok) {
+            result.push_back(i + 1);
+        }
+    }
+    printf("%d\n", (int)result.size());
+    for (int i = 0; i < (int)result.size(); i++)
+        printf("%d%c", result[i], " \n"[i == (int)result.size() - 1]);
+    return 0;
+}
