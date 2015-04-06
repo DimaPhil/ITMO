@@ -4,29 +4,29 @@ const int maxn = 1e5 + 10;
 const int alphabet = 30;
             
 struct Node {
-	int l, r, parent, link;
-	int go[alphabet];
+    int l, r, parent, link;
+    int go[alphabet];
 
-	Node() {
-		l = r = parent = link = -1;
-		for (int i = 0; i < alphabet; i++)
-			go[i] = -1;
-	}
-	
-	Node(int l, int r, int parent) : l(l), r(r), parent(parent), link(-1) {
-		for (int i = 0; i < 30; i++)
-			go[i] = -1;
-	}
-	
-	int len() {
-		return r - l;
-	}
+    Node() {
+        l = r = parent = link = -1;
+        for (int i = 0; i < alphabet; i++)
+            go[i] = -1;
+    }
+    
+    Node(int l, int r, int parent) : l(l), r(r), parent(parent), link(-1) {
+        for (int i = 0; i < 30; i++)
+            go[i] = -1;
+    }
+    
+    int len() {
+        return r - l;
+    }
 };
 
 struct Position {
-	int v, l;
-	Position() {}
-	Position(int v, int l) : v(v), l(l) {}
+    int v, l;
+    Position() {}
+    Position(int v, int l) : v(v), l(l) {}
 };
 
 char s[maxn * 2];
@@ -105,25 +105,25 @@ Position addChar(Position pos, int i) {
 int main() {
     freopen("tree.in", "r", stdin);
     freopen("tree.out", "w", stdout);
-	gets(s);
-	root.link = 0;
-	tree[treeSize++] = root;
-	Position pos = Position(0, 0);
+    gets(s);
+    root.link = 0;
+    tree[treeSize++] = root;
+    Position pos = Position(0, 0);
     szs = strlen(s);
-	for (int i = 0; i < szs; i++)
-		pos = addChar(pos, i);
-	int treeEdges = 0;
-	for (int i = 0; i < treeSize; i++) {
-		for (int c = 0; c < alphabet; c++)
-			if (tree[i].go[c] != -1)
-				++treeEdges;
-	}
-	printf("%d %d\n", treeSize, treeEdges);
-	for (int i = 0; i < treeSize; i++) {
-		for (int c = 0; c < alphabet; c++)
-			if (tree[i].go[c] != -1) {
-				printf("%d %d %d %d\n", i + 1, tree[i].go[c] + 1, tree[tree[i].go[c]].l + 1, tree[tree[i].go[c]].r);
-			}
-	}
-	return 0;
+    for (int i = 0; i < szs; i++)
+        pos = addChar(pos, i);
+    int treeEdges = 0;
+    for (int i = 0; i < treeSize; i++) {
+        for (int c = 0; c < alphabet; c++)
+            if (tree[i].go[c] != -1)
+                ++treeEdges;
+    }
+    printf("%d %d\n", treeSize, treeEdges);
+    for (int i = 0; i < treeSize; i++) {
+        for (int c = 0; c < alphabet; c++)
+            if (tree[i].go[c] != -1) {
+                printf("%d %d %d %d\n", i + 1, tree[i].go[c] + 1, tree[tree[i].go[c]].l + 1, tree[tree[i].go[c]].r);
+            }
+    }
+    return 0;
 }
