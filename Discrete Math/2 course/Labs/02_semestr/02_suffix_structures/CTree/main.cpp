@@ -110,7 +110,7 @@ int main() {
     tree[treeSize++] = root;
     Position pos = Position(0, 0);
     szs = strlen(s);
-    for (int i = 0; i < szs; i++)
+    for (int i = szs - 1; i >= 0; i--)
         pos = addChar(pos, i);
     int treeEdges = 0;
     for (int i = 0; i < treeSize; i++) {
