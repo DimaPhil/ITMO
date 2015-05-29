@@ -36,7 +36,7 @@ public class HelloUDPClient implements HelloClient {
                             while (currentRequest != requests) {
                                 String message = (prefix + finalThreadId + "_" + currentRequest);
                                 byte[] messageBytes = message.getBytes();
-                                System.out.println(message);
+                                System.err.println(message);
                                 socket.send(new DatagramPacket(messageBytes, messageBytes.length, address, port));
 
                                 DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
@@ -52,7 +52,7 @@ public class HelloUDPClient implements HelloClient {
                                     if (requestId >= requests) {
                                         throw new ClientException("wrong request id");
                                     }
-                                    System.out.println(response);
+                                    System.err.println(response);
                                     currentRequest++;
                                 } catch (SocketTimeoutException | ClientException e) {
                                     // ok, we'll resend socket
@@ -82,19 +82,5 @@ public class HelloUDPClient implements HelloClient {
         } catch (UnknownHostException | InterruptedException e) {
             System.out.println(e.toString());
         }
-    }
-
-    public static void main(String[] args) {
-        if (args == null || args.length != 5) {
-            System.out.println("Usage: java HelloUDPClient [host] [port] [prefix] [requests] [threads]");
-        }
-        String host = args[0];
-        int port = Integer.parseInt(args[1]);
-        String prefix = args[2];
-        int requests = Integer.parseInt(args[3]);
-        int threads = Integer.parseInt(args[4]);
-
-        HelloUDPClient client = new HelloUDPClient();
-        client.start(host, port, prefix, requests, threads);
     }
 }

@@ -79,7 +79,7 @@ public class HelloUDPServer implements HelloServer {
             int threads = Integer.parseInt(args[1]);
             server.start(port, threads);
             HelloUDPClient client = new HelloUDPClient();
-            client.start("localhost", port, "prefix", 10, 10);
+            client.start("localhost", port, "вдлвофдвло", 10, 10);
         } catch (NumberFormatException e) {
             System.out.println("Usage: java HelloUDPServer [port] [threads]");
         }
