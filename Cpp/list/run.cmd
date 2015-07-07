@@ -1,0 +1,1 @@
+g++ check.cpp list.cpp node.cpp list_iterator.cpp list_const_iterator.cpp list_reverse_iterator.cpp list_const_reverse_iterator.cpp -o check.exe
