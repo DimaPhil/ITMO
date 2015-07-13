@@ -3,25 +3,25 @@
 #include <iostream>
 
 list::list() {
-	tail = new node();
-	tail->next = nullptr;
-	tail->prev = nullptr;
-	head = tail;
+  pend = new node();
+  pend->next = pend;
+  pend->prev = pend;
+  pbegin = pend;
 }
 
 list::list(const int &value) {
-	tail = new node();
-  	try {
-    	pbegin = new node();
-  	} catch(...) {
-    	delete pend;
-    	throw;
-  	}
-  	pend->next = pend;
-  	pend->prev = pbegin;
-  	pbegin->next = pend;
-  	pbegin->prev = pbegin;
-  	pbegin->value = value;
+  pend = new node();
+  try {
+    pbegin = new node();
+  } catch(...) {
+    delete pend;
+    throw;
+  }
+  pend->next = pend;
+  pend->prev = pbegin;
+  pbegin->next = pend;
+  pbegin->prev = pbegin;
+  pbegin->value = value;
 }
 
 void list::deleteList()
