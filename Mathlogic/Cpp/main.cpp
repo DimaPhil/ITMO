@@ -1,8 +1,21 @@
-#include <iostream>
+#include "HW1.cpp"
+#include "HW2.cpp"
+#include "HW3.cpp"
 
-using namespace std;
+#include <ctime>
+
+const std::string FILE_PREFIX = "/home/dimaphil/ClionProjects/Mathlogic/";
 
 int main() {
-    cout << "Hello, World!" << endl;
+    //HW1 homework1;
+    //homework1.run((FILE_PREFIX + "tests/01.in").c_str(), (FILE_PREFIX + "tests/01.out").c_str());
+
+    //HW2 homework2;
+    //homework2.run((FILE_PREFIX + "tests/02.in").c_str(), (FILE_PREFIX + "tests/02.out").c_str());
+
+    HW3 homework3;
+    homework3.run((FILE_PREFIX + "tests/03.in").c_str(), (FILE_PREFIX + "tests/03.out").c_str());
+
+    fprintf(stderr, "%.2lf\n", (double)clock() / CLOCKS_PER_SEC);
     return 0;
 }

@@ -7,10 +7,10 @@
 #include <string>
 #include <cstring>
 
+using Expressions::Expression;
+
 class Parser {
 private:
-    using Expressions::Expression;
-
     class ParserError {
     private:
         const char *message;
@@ -35,6 +35,7 @@ private:
     Expression* parse_implication();
     Expression* parse_expression();
 public:
+    Parser();
     Expression* parse(const std::string &expression);
 };
 

@@ -1,12 +1,10 @@
+#include <iostream>
+
 #include "Parser.h"
 
-#include <cctype>
+using namespace Expressions;
 
-using Expressions::Expression;
-using Expressions::Implication;
-using Expressions::And;
-using Expressions::Or;
-using Expressions::Not;
+Parser::Parser() {}
 
 Expression* Parser::parse_and() {
     if (index >= expression.size()) {
@@ -59,10 +57,14 @@ Expression* Parser::parse_implication() {
 }
 
 Expression* Parser::parse_expression() {
-    Expression *result = parse_implication();
-    while (index < expression.size() - 1 && expression.substr(index, 2) == "->") {
-        index += 2;
-        result = new Implication(result, parse_implication());
+    std::vector<Expression*> results = {parse_implication()};
+    while (index < expression.size() - 1 && expression[index] == '>') {
+        index++;
+        results.push_back(parse_implication());
+    }
+    Expression *result = results.back();
+    for (int i = (int)results.size() - 2; i >= 0; i--) {
+        result = new Implication(results[i], result);
     }
     return result;
 }
