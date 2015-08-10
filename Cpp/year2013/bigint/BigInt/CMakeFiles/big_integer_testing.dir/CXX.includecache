@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/dimaphil/Documents/Cpp/BigInt/BigInt/my_vector.cpp
+my_vector.h
+/home/dimaphil/Documents/Cpp/BigInt/BigInt/my_vector.h
+
+/home/dimaphil/Documents/Cpp/BigInt/BigInt/my_vector.h
+algorithm
+-
+cstring
+-
+stdexcept
+-
+
