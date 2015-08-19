@@ -198,6 +198,7 @@ struct HW4 {
     };
 
     std::map<size_t, size_t> expression_hashes;
+    std::map<std::string, Expression*> variables;
 
     int find_expression(Expression *expression) {
         auto it = expression_hashes.find(expression->hash());
@@ -217,7 +218,7 @@ struct HW4 {
             return result;
         }
         Implication *implication_expression = reinterpret_cast<Implication*>(expression);
-        if (check_class_inherity<ExistsQuantifier>(*implication_expression->left)) {
+        if (check_class_inherity<ExistsQuantifier>(*(implication_expression->left))) {
             ExistsQuantifier *exists_left = reinterpret_cast<ExistsQuantifier*>(implication_expression->left);
             Expression *current = new Implication(exists_left->next, implication_expression->right);
             result.index = find_expression(current);
@@ -232,7 +233,7 @@ struct HW4 {
                 return result;
             }
         }
-        if (check_class_inherity<ForallQuantifier>(*implication_expression->right)) {
+        if (check_class_inherity<ForallQuantifier>(*(implication_expression->right))) {
             ForallQuantifier *forall_right = reinterpret_cast<ForallQuantifier*>(implication_expression->right);
             Expression *current = new Implication(implication_expression->left, forall_right->next);
             result.index = find_expression(current);
@@ -251,8 +252,24 @@ struct HW4 {
     }
 
     PredicateResult is_predicate_axiom(Expression *expression) {
+        using Expressions::Implication;
+        using Expressions::ExistsQuantifier;
+        using Expressions::ForallQuantifier;
+
         PredicateResult result;
-        
+        if (!check_class_inherity<Implication>(*expression)) {
+            return result;
+        }
+        Implication *implication_expression = reinterpret_cast<Implication*>(expression);
+        if (check_class_inherity<ForallQuantifier>(*(implication_expression->left))) {
+            variables.clear();
+            ForallQuantifier *forall_quantifier = reinterpret_cast<ForallQuantifier*>(implication_expression->left);
+            std::string variable_name = forall_quantifier->variable->to_string();
+            if (forall_quantifier->next->is_substitute(implication_expression->right)) {
+
+            }
+        }
+        return result;
     }
 
     void run(const char *input, const char *output) {
