@@ -13,3 +13,11 @@ Expression* Expressions::Predicate::substitute(const std::map<std::string, Expre
     }
     return new Predicate(name, substituted_terms);
 }
+
+bool Expressions::Predicate::is_substitute(Expression *expression) {
+    if (!terms.empty()) {
+        return ArgumentsHandler::is_substitute(expression);
+    }
+    return true;
+    //TODO: Proofcheck
+}

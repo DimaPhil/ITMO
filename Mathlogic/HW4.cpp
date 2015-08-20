@@ -140,7 +140,7 @@ struct HW4 {
             ArgumentsHandler *arguments_haystack = reinterpret_cast<ArgumentsHandler*>(haystack);
             bool equals = arguments_needle->name == arguments_haystack->name &&
                     arguments_needle->terms.size() == arguments_haystack->terms.size();
-            for (size_t i = 0; i < arguments_needle->terms; i++) {
+            for (size_t i = 0; i < arguments_needle->terms.size(); i++) {
                 equals &= expression_matches(arguments_needle->terms[i], arguments_haystack->terms[i]);
             }
             return equals;

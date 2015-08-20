@@ -9,6 +9,26 @@
 #include <map>
 
 namespace Expressions {
+    struct SubstitutionState {
+        bool was_substituted;
+        bool successuful;
+
+        SubstitutionState()
+                : was_substituted(false)
+                , successuful(true) {}
+
+        SubstitutionState(bool was_substituted, bool successful = true) {
+            this->was_substituted = was_substituted;
+            this->successuful = successful;
+        }
+
+        SubstitutionState& operator = (const SubstitutionState &other) {
+            was_substituted |= other.was_substituted;
+            successuful &= other.successuful;
+            return *this;
+        }
+    };
+
     struct Expression {
         virtual bool equals(Expression *expression) = 0;
         virtual std::string to_string() = 0;
@@ -19,6 +39,10 @@ namespace Expressions {
         virtual void prove_with_values(std::vector<Expression *> &proof,
                                        const std::map<std::string, bool> &variables_values) = 0;
         virtual Expression *substitute(const std::map<std::string, Expression *> &changes_to_apply) = 0;
+        virtual bool is_substitute(Expression *expression) = 0;
+        virtual SubstitutionState is_free_to_substitute(const std::string &variable_name,
+                                                        const std::vector<std::string> &free_variables) = 0;
+
         virtual ~Expression() {}
     };
 
@@ -35,6 +59,9 @@ namespace Expressions {
         bool calculate(const std::map<std::string, bool> &variables_values);
         void prove_with_values(std::vector<Expression *> &proof, const std::map<std::string, bool> &variables_values);
         Expression *substitute(const std::map<std::string, Expression *> &changes_to_apply);
+        bool is_substitute(Expression *expression);
+        SubstitutionState is_free_to_substitute(const std::string &variable_name,
+                                                        const std::vector<std::string> &free_variables);
     };
 
     struct UnaryOperation : public Expression {
@@ -48,6 +75,9 @@ namespace Expressions {
         std::string simple_to_string();
         size_t hash();
         std::vector<std::string> get_variables();
+
+        virtual SubstitutionState is_free_to_substitute(const std::string &variable_name,
+                                                        const std::vector<std::string> &free_variables) override;
     };
 
     struct Not : public UnaryOperation {
@@ -55,6 +85,8 @@ namespace Expressions {
         bool calculate(const std::map<std::string, bool> &variables_values);
         Expression *substitute(const std::map<std::string, Expression *> &changes_to_apply);
         void prove_with_values(std::vector<Expression *> &proof, const std::map<std::string, bool> &variables_values);
+
+        virtual bool is_substitute(Expression *expression) override;
     };
 
     struct BinaryOperation : public Expression {
@@ -71,12 +103,19 @@ namespace Expressions {
         std::vector<std::string> get_variables();
         void prove_with_values(std::vector<Expression *> &proof, const std::map<std::string, bool> &variables_values);
         virtual std::vector<std::string> get_proof(size_t type_left, size_t type_right) = 0;
+
+        virtual bool is_substitute(Expression *expression) override;
+        virtual SubstitutionState is_free_to_substitute(const std::string &variable_name,
+                                                        const std::vector<std::string> &free_variables) override;
+
+        virtual ~BinaryOperation() {}
     };
 
     struct Implication : public BinaryOperation {
         Implication(Expression *left, Expression *right);
         bool calculate(const std::map<std::string, bool> &variables_values);
         Expression *substitute(const std::map<std::string, Expression *> &changes_to_apply);
+        virtual bool is_substitute(Expression *expression) override;
         std::vector<std::string> get_proof(size_t type_left, size_t type_right);
     };
 
@@ -84,6 +123,7 @@ namespace Expressions {
         And(Expression *left, Expression *right);
         bool calculate(const std::map<std::string, bool> &variables_values);
         Expression *substitute(const std::map<std::string, Expression *> &changes_to_apply);
+        virtual bool is_substitute(Expression *expression) override;
         std::vector<std::string> get_proof(size_t type_left, size_t type_right);
     };
 
@@ -91,6 +131,7 @@ namespace Expressions {
         Or(Expression *left, Expression *right);
         bool calculate(const std::map<std::string, bool> &variables_values);
         Expression *substitute(const std::map<std::string, Expression *> &changes_to_apply);
+        virtual bool is_substitute(Expression *expression) override;
         std::vector<std::string> get_proof(size_t type_left, size_t type_right);
     };
 
@@ -128,9 +169,12 @@ namespace Expressions {
         Quantifier(Expression *variable, Expression *next, char operation);
 
         bool equals(Expression *expression);
+        bool is_substitute(Expression *expression);
         std::string to_string();
         std::vector<std::string> get_variables();
         size_t hash();
+        SubstitutionState is_free_to_substitute(const std::string &variable_name,
+                                                const std::vector<std::string> &free_variables);
 
         void prove_with_values(std::vector<Expression *> &proof,
                                        const std::map<std::string, bool> &variables_values);
@@ -166,12 +210,16 @@ namespace Expressions {
         void prove_with_values(std::vector<Expression *> &proof,
                                const std::map<std::string, bool> &variables_values);
         bool calculate(const std::map<std::string, bool> &variables_values);
+        bool is_substitute(Expression *expression);
+        SubstitutionState is_free_to_substitute(const std::string &variable_name,
+                                   const std::vector<std::string> &free_variables);
     };
 
     struct Predicate : public ArgumentsHandler {
         Predicate(const std::string &name, const std::vector<Expression*> &terms);
 
         Expression *substitute(const std::map<std::string, Expression *> &changes_to_apply);
+        bool is_substitute(Expression *expression);
     };
 
     struct Zero : public Expression {
@@ -188,6 +236,9 @@ namespace Expressions {
         void prove_with_values(std::vector<Expression *> &proof,
                                const std::map<std::string, bool> &variables_values);
         bool calculate(const std::map<std::string, bool> &variables_values);
+        bool is_substitute(Expression *expression);
+        SubstitutionState is_free_to_substitute(const std::string &variable_name,
+                                                const std::vector<std::string> &free_variables);
     };
 
     struct Stroke : public Expression {
@@ -201,10 +252,13 @@ namespace Expressions {
         size_t hash();
         std::vector<std::string> get_variables();
         Expression *substitute(const std::map<std::string, Expression *> &changes_to_apply);
+        bool is_substitute(Expression *expression);
 
         void prove_with_values(std::vector<Expression *> &proof,
                                const std::map<std::string, bool> &variables_values);
         bool calculate(const std::map<std::string, bool> &variables_values);
+        SubstitutionState is_free_to_substitute(const std::string &variable_name,
+                                                const std::vector<std::string> &free_variables);
     };
 }
 

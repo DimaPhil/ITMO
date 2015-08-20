@@ -63,3 +63,12 @@ Expression* Expressions::Variable::substitute(const std::map<std::string, Expres
         return changes_to_apply.find(name)->second;
     }
 }
+
+bool Expressions::Variable::is_substitute(Expression *expression) {
+    return false;
+}
+
+Expressions::SubstitutionState Expressions::Variable::is_free_to_substitute(const std::string &variable_name,
+                                                               const std::vector<std::string> &free_variables) {
+    return SubstitutionState(name == variable_name);
+}

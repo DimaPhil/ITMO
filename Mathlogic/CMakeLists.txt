@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.3)
 project(Mathlogic)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pedantic -Wall -O2 -Werror")
@@ -19,7 +19,6 @@ set(EXPRESSIONS_FILES ${EXPRESSIONS_FILES} expressions/Multiply.cpp)
 set(EXPRESSIONS_FILES ${EXPRESSIONS_FILES} expressions/ForallQuantifier.cpp)
 set(EXPRESSIONS_FILES ${EXPRESSIONS_FILES} expressions/ExistsQuantifier.cpp)
 set(EXPRESSIONS_FILES ${EXPRESSIONS_FILES} expressions/Predicate.cpp)
-
 
 set(HEADER_FILES expressions/Expressions.h expressions/Parser.h expressions/ParserFormalArithmetic.h Utils.h)
 set(MAIN_FILES main.cpp HW1.cpp HW2.cpp HW3.cpp HW4.cpp)

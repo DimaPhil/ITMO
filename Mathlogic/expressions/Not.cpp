@@ -5,6 +5,16 @@
 
 using Expressions::Expression;
 
+template<class Base, class Derived>
+bool check_class_inherity(Derived &derived) {
+    try {
+        dynamic_cast<Base &>(derived);
+        return true;
+    } catch (const std::bad_cast &) {
+        return false;
+    }
+}
+
 static Expression* parse_expression(const std::string &const_expression) {
     std::string expression = const_expression;
     expression = Utils::replace(expression, ' ');
@@ -28,6 +38,11 @@ bool Expressions::Not::calculate(const std::map<std::string, bool> &variables_va
 
 Expression* Expressions::Not::substitute(const std::map<std::string, Expression *> &changes_to_apply) {
     return new Not(operand->substitute(changes_to_apply));
+}
+
+bool Expressions::Not::is_substitute(Expression *expression) {
+    return check_class_inherity<UnaryOperation>(*expression) &&
+           operand->is_substitute(reinterpret_cast<UnaryOperation*>(expression)->operand);
 }
 
 void Expressions::Not::prove_with_values(std::vector<Expression *> &proof,

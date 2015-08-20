@@ -2,6 +2,16 @@
 
 using Expressions::Expression;
 
+template<class Base, class Derived>
+bool check_class_inherity(Derived &derived) {
+    try {
+        dynamic_cast<Base &>(derived);
+        return true;
+    } catch (const std::bad_cast &) {
+        return false;
+    }
+}
+
 Expressions::And::And(Expression *left, Expression *right) : BinaryOperation('&', left, right) {}
 
 bool Expressions::And::calculate(const std::map<std::string, bool> &variables_values) {
@@ -10,6 +20,14 @@ bool Expressions::And::calculate(const std::map<std::string, bool> &variables_va
 
 Expression* Expressions::And::substitute(const std::map<std::string, Expression *> &changes_to_apply) {
     return new And(left->substitute(changes_to_apply), right->substitute(changes_to_apply));
+}
+
+bool Expressions::And::is_substitute(Expression *expression) {
+    if (!check_class_inherity<And>(*expression)) {
+        return false;
+    }
+    And *and_expression = reinterpret_cast<And*>(expression);
+    return left->is_substitute(and_expression->left) && right->is_substitute(and_expression->right);
 }
 
 std::vector<std::string> Expressions::And::get_proof(size_t type_left, size_t type_right) {

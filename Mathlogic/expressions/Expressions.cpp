@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <map>
 #include <iostream>
+#include <algorithm>
 
 #include "Expressions.h"
 #include "Parser.h"
@@ -10,6 +11,8 @@
 using Expressions::Expression;
 using Expressions::UnaryOperation;
 using Expressions::BinaryOperation;
+
+using Expressions::SubstitutionState;
 
 template<class Base, class Derived>
 bool check_class_inherity(Derived &derived) {
@@ -73,6 +76,11 @@ size_t UnaryOperation::hash() {
 
 std::vector<std::string> Expressions::UnaryOperation::get_variables() {
     return operand->get_variables();
+}
+
+Expressions::SubstitutionState UnaryOperation::is_free_to_substitute(const std::string &variable_name,
+                                                const std::vector<std::string> &free_variables) {
+    return operand->is_free_to_substitute(variable_name, free_variables);
 }
 
 /*----------------------------------------------------------------------------------------------------------*/
@@ -143,6 +151,21 @@ void BinaryOperation::prove_with_values(std::vector<Expression *> &proof,
     }
 }
 
+bool BinaryOperation::is_substitute(Expression *expression) {
+    if (!check_class_inherity<BinaryOperation>(*expression)) {
+        return false;
+    }
+    BinaryOperation *binary_expression = reinterpret_cast<BinaryOperation*>(expression);
+    return left->is_substitute(binary_expression->left) && right->is_substitute(binary_expression->right);
+}
+
+Expressions::SubstitutionState BinaryOperation::is_free_to_substitute(const std::string &variable_name,
+                                                                      const std::vector<std::string> &free_variables) {
+    SubstitutionState result(left->is_free_to_substitute(variable_name, free_variables));
+    result = right->is_free_to_substitute(variable_name, free_variables);
+    return result;
+}
+
 /*----------------------------------------------------------------------------------------------------------*/
 
 Expressions::Quantifier::Quantifier() {
@@ -171,6 +194,11 @@ bool Expressions::Quantifier::equals(Expression *expression) {
            next->equals(quantifier_expression->next);
 }
 
+bool Expressions::Quantifier::is_substitute(Expression *expression) {
+    return check_class_inherity<Quantifier>(*expression) &&
+           next->is_substitute(reinterpret_cast<Quantifier*>(expression)->next);
+}
+
 std::string Expressions::Quantifier::to_string() {
     return std::string(1, operation) + variable->to_string() + "(" + next->to_string() + ")";
 }
@@ -194,6 +222,19 @@ void Expressions::Quantifier::prove_with_values(std::vector<Expression *> &proof
 
 bool Expressions::Quantifier::calculate(const std::map<std::string, bool> &variables_values) {
     return false;
+}
+
+SubstitutionState Expressions::Quantifier::is_free_to_substitute(const std::string &variable_name,
+                                                                 const std::vector<std::string> &free_variables) {
+    if (variable_name == variable->to_string()) {
+        return SubstitutionState();
+    }
+    SubstitutionState result(next->is_free_to_substitute(variable_name, free_variables));
+    if (result.was_substituted &&
+        std::find(free_variables.begin(), free_variables.end(), variable->to_string()) != free_variables.end()) {
+        result.successuful = false;
+    }
+    return result;
 }
 
 /*----------------------------------------------------------------------------------------------------------*/
@@ -252,6 +293,27 @@ bool Expressions::ArgumentsHandler::calculate(const std::map<std::string, bool> 
     return false;
 }
 
+bool Expressions::ArgumentsHandler::is_substitute(Expression *expression) {
+    if (!check_class_inherity<ArgumentsHandler>(*expression)) {
+        return false;
+    }
+    ArgumentsHandler *arguments_expression = reinterpret_cast<ArgumentsHandler*>(expression);
+    bool ok = (name == arguments_expression->name && terms.size() == arguments_expression->terms.size());
+    for (size_t i = 0; i < terms.size(); i++) {
+        ok &= terms[i]->is_substitute(arguments_expression->terms[i]);
+    }
+    return ok;
+}
+
+SubstitutionState Expressions::ArgumentsHandler::is_free_to_substitute(const std::string &variable_name,
+                                                                       const std::vector<std::string> &free_variables) {
+    SubstitutionState result;
+    for (auto term : terms) {
+        result = term->is_free_to_substitute(variable_name, free_variables);
+    }
+    return result;
+}
+
 /*----------------------------------------------------------------------------------------------------------*/
 
 Expressions::Zero::Zero() {
@@ -264,6 +326,10 @@ std::string Expressions::Zero::to_string() {
 
 bool Expressions::Zero::equals(Expression *expression) {
     return check_class_inherity<Zero>(*expression);
+}
+
+bool Expressions::Zero::is_substitute(Expression *expression) {
+    return equals(expression);
 }
 
 size_t Expressions::Zero::hash() {
@@ -286,6 +352,11 @@ bool Expressions::Zero::calculate(const std::map<std::string, bool> &variables_v
     return false;
 }
 
+SubstitutionState Expressions::Zero::is_free_to_substitute(const std::string &variable_name,
+                                                           const std::vector<std::string> &free_variables) {
+    return SubstitutionState();
+}
+
 /*----------------------------------------------------------------------------------------------------------*/
 
 Expressions::Stroke::Stroke(Expression *operand) {
@@ -303,6 +374,11 @@ bool Expressions::Stroke::equals(Expression *expression) {
         return false;
     }
     return operand->equals(reinterpret_cast<Stroke*>(expression)->operand);
+}
+
+bool Expressions::Stroke::is_substitute(Expression *expression) {
+    return check_class_inherity<Stroke>(*expression) &&
+           operand->is_substitute(reinterpret_cast<Stroke*>(expression)->operand);
 }
 
 size_t Expressions::Stroke::hash() {
@@ -323,6 +399,11 @@ void Expressions::Stroke::prove_with_values(std::vector<Expression *> &proof,
 
 bool Expressions::Stroke::calculate(const std::map<std::string, bool> &variables_values) {
     return operand->calculate(variables_values);
+}
+
+Expressions::SubstitutionState Expressions::Stroke::is_free_to_substitute(const std::string &variable_name,
+                                                     const std::vector<std::string> &free_variables) {
+    return operand->is_free_to_substitute(variable_name, free_variables);
 }
 
 /*----------------------------------------------------------------------------------------------------------*/
