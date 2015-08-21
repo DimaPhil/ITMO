@@ -1,16 +1,7 @@
 #include "Expressions.h"
+#include "../ProofChecker.h"
 
 using Expressions::Expression;
-
-template<class Base, class Derived>
-bool check_class_inherity(Derived &derived) {
-    try {
-        dynamic_cast<Base &>(derived);
-        return true;
-    } catch (const std::bad_cast &) {
-        return false;
-    }
-}
 
 Expressions::Variable::Variable(const char *name) {
     this->name = std::string(name);
@@ -65,7 +56,13 @@ Expression* Expressions::Variable::substitute(const std::map<std::string, Expres
 }
 
 bool Expressions::Variable::is_substitute(Expression *expression) {
-    return false;
+    ProofChecker *checker = ProofChecker::get_instance();
+    if (checker->variables.find(name) == checker->variables.end()) {
+        checker->variables[name] = expression;
+    } else if (checker->variables[name]->hash() != expression->hash()) {
+        return false;
+    }
+    return true;
 }
 
 Expressions::SubstitutionState Expressions::Variable::is_free_to_substitute(const std::string &variable_name,

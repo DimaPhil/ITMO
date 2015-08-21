@@ -21,5 +21,5 @@ set(EXPRESSIONS_FILES ${EXPRESSIONS_FILES} expressions/ExistsQuantifier.cpp)
 set(EXPRESSIONS_FILES ${EXPRESSIONS_FILES} expressions/Predicate.cpp)
 
 set(HEADER_FILES expressions/Expressions.h expressions/Parser.h expressions/ParserFormalArithmetic.h Utils.h)
-set(MAIN_FILES main.cpp HW1.cpp HW2.cpp HW3.cpp HW4.cpp)
+set(MAIN_FILES main.cpp HW1.cpp HW2.cpp HW3.cpp HW4.cpp ProofChecker.h ProofChecker.cpp)
 add_executable(Mathlogic ${HEADER_FILES} ${SOURCE_FILES} ${EXPRESSIONS_FILES} ${MAIN_FILES})

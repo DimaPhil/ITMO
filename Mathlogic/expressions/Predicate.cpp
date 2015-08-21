@@ -1,4 +1,5 @@
 #include "Expressions.h"
+#include "../ProofChecker.h"
 
 using Expressions::Expression;
 
@@ -18,6 +19,11 @@ bool Expressions::Predicate::is_substitute(Expression *expression) {
     if (!terms.empty()) {
         return ArgumentsHandler::is_substitute(expression);
     }
+    ProofChecker *checker = ProofChecker::get_instance();
+    if (checker->variables.find(name) == checker->variables.end()) {
+        checker->variables[name] = expression;
+    } else if (checker->variables[name]->hash() != expression->hash()) {
+        return false;
+    }
     return true;
-    //TODO: Proofcheck
 }

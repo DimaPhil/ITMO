@@ -5,17 +5,17 @@
 
 #include <ctime>
 
-const std::string FILE_PREFIX = "/home/dimaphil/ClionProjects/Mathlogic/";
+const std::string FILE_PREFIX = "/home/dmitry/Documents/ITMO/Mathlogic/";
 
 int main() {
-    HW1 homework1;
-    homework1.run((FILE_PREFIX + "tests/01_big.in").c_str(), (FILE_PREFIX + "tests/01_big.out").c_str());
+    //HW1 homework1;
+    //homework1.run((FILE_PREFIX + "tests/01_big.in").c_str(), (FILE_PREFIX + "tests/01_big.out").c_str());
 
     //HW2 homework2;
     //homework2.run((FILE_PREFIX + "tests/02.in").c_str(), (FILE_PREFIX + "tests/02.out").c_str());
 
-    //HW3 homework3;
-    //homework3.run((FILE_PREFIX + "tests/03.in").c_str(), (FILE_PREFIX + "tests/03.out").c_str());
+    HW3 homework3;
+    homework3.run((FILE_PREFIX + "tests/03.in").c_str(), (FILE_PREFIX + "tests/03.out").c_str());
 
     //HW4 homework4;
     //homework4.run((FILE_PREFIX + "tests/04.in").c_str(), (FILE_PREFIX + "tests/04.out").c_str());
