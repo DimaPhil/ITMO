@@ -55,18 +55,13 @@ struct ProofChecker {
         return &checker;
     }
 
-    Expression* parse_expression(const std::string &const_expression);
-    void add_expression(std::vector<Expression *> &expressions, const std::string &expression);
-    void add_axioms(std::vector<Expression *> &axioms, std::vector<Expression *> &arithmetic_axioms);
-
-    EXPRESSION_TYPE get_expression_type(Expression *expression);
-    bool expression_matches(Expression *needle, Expression *haystack, std::map<std::string, Expression*> &variables);
-    bool expression_matches(Expression *needle, Expression *haystack);
+    void add_expression(Expression *expression);
 
     bool is_axiom(Expression *axiom, Expression *expression);
-    int get_axiom(const std::vector<Expression*> &axioms, Expression *expression);
-    PredicateResult is_predicate_axiom(Expression *expression);
+    int get_axiom(Expression *expression);
+    PredicateResult get_predicate_axiom(Expression *expression);
     int get_arithmetic_axiom(Expression *expression);
+    std::pair<size_t, size_t> get_modus_ponens(Expression *expression);
 
     int find_expression(Expression *expression);
     PredicateResult get_predicate_rule(Expression *expression);

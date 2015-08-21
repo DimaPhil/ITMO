@@ -14,16 +14,6 @@ using namespace Expressions;
 struct HW4 {
     HW4() { }
 
-    void add_self_proof(std::vector<std::string> &result, const std::string &alpha) {
-        result.push_back(alpha + "->(" + alpha + "->" + alpha + ")");
-        result.push_back("(" + alpha + "->(" + alpha + "->" + alpha + "))->" +
-                         "(" + alpha + "->((" + alpha + "->" + alpha + ")->" + alpha + "))->" +
-                         "(" + alpha + "->" + alpha + ")");
-        result.push_back(
-                "(" + alpha + "->((" + alpha + "->" + alpha + ")->" + alpha + "))->(" + alpha + "->" + alpha + ")");
-        result.push_back("(" + alpha + "->((" + alpha + "->" + alpha + ")" + "->" + alpha + "))");
-    }
-
     void run(const char *input, const char *output) {
         assert(freopen(input, "r", stdin));
         assert(freopen(output, "w", stdout));

@@ -4,7 +4,7 @@
 #include <cassert>
 
 #include "expressions/Expressions.h"
-#include "expressions/Parser.h"
+#include "expressions/ParserFormalArithmetic.h"
 #include "ProofChecker.h"
 
 using namespace Expressions;
@@ -13,27 +13,27 @@ std::vector<Expression*> ProofChecker::axioms;
 std::vector<Expression*> ProofChecker::arithmetic_axioms;
 std::map<std::string, Expression*> ProofChecker::variables;
 
-Expression* ProofChecker::parse_expression(const std::string &const_expression) {
+Expression* parse_expression(const std::string &const_expression) {
     std::string expression = const_expression;
     expression = Utils::replace(expression, ' ');
     expression = Utils::replace(expression, '\t');
     expression = Utils::replace(expression, "->", ">");
 
-    Parser parser;
+    ParserFormalArithmetic parser;
     try {
         return parser.parse(expression);
-    } catch (const Parser::ParserError &e) {
+    } catch (const ParserFormalArithmetic::ParserError &e) {
         std::cerr << "Error in parsing expression\nExpression: " << expression << "\nError: " << e.what() <<
         '\n';
         return nullptr;
     }
 }
 
-void ProofChecker::add_expression(std::vector<Expression *> &expressions, const std::string &expression) {
+void add_expression(std::vector<Expression *> &expressions, const std::string &expression) {
     expressions.emplace_back(parse_expression(expression));
 }
 
-void ProofChecker::add_axioms(std::vector<Expression *> &axioms, std::vector<Expression *> &arithmetic_axioms) {
+void add_axioms(std::vector<Expression *> &axioms, std::vector<Expression *> &arithmetic_axioms) {
     add_expression(axioms, "A->B->A");
     add_expression(axioms, "(A->B)->(A->B->C)->(A->C)");
     add_expression(axioms, "A&B->A");
@@ -65,103 +65,20 @@ void ProofChecker::clear() {
     variables.clear();
 }
 
-//bad function, but don't know, how to do it better
-//if new classes were added, modify this function
-ProofChecker::EXPRESSION_TYPE ProofChecker::get_expression_type(Expression *expression) {
-    if (check_class_inherity<Variable>(*expression)) {
-        return VARIABLE;
-    }
-    if (check_class_inherity<UnaryOperation>(*expression)) {
-        return UNARY_OPERATION;
-    }
-    if (check_class_inherity<BinaryOperation>(*expression)) {
-        return BINARY_OPERATION;
-    }
-    if (check_class_inherity<Quantifier>(*expression)) {
-        return QUANTIFIER;
-    }
-    if (check_class_inherity<ArgumentsHandler>(*expression)) {
-        return ARGUMENTS_HANDLER;
-    }
-    if (check_class_inherity<Zero>(*expression)) {
-        return ZERO;
-    }
-    if (check_class_inherity<Stroke>(*expression)) {
-        return STROKE;
-    }
-    return UNKNOWN_TYPE;
-}
-
-bool ProofChecker::expression_matches(Expression *needle, Expression *haystack,
-                                      std::map<std::string, Expression *> &variables) {
-    EXPRESSION_TYPE needle_type = get_expression_type(needle);
-    EXPRESSION_TYPE haystack_type = get_expression_type(haystack);
-    assert(needle_type != UNKNOWN_TYPE);
-    assert(haystack_type != UNKNOWN_TYPE);
-    if (needle_type != haystack_type && needle_type != VARIABLE) {
-        return false;
-    }
-    if (needle_type == VARIABLE) {
-        Variable *needle_variable = reinterpret_cast<Variable *>(needle);
-        if (variables.find(needle_variable->to_string()) != variables.end()) {
-            return variables[needle_variable->to_string()]->equals(haystack);
-        }
-        variables[needle_variable->to_string()] = haystack;
-        return true;
-    }
-    if (needle_type == UNARY_OPERATION) {
-        UnaryOperation *unary_needle = reinterpret_cast<UnaryOperation *>(needle);
-        UnaryOperation *unary_haystack = reinterpret_cast<UnaryOperation *>(haystack);
-        return unary_needle->operation == unary_haystack->operation &&
-               expression_matches(unary_needle->operand, unary_haystack->operand, variables);
-    }
-    if (needle_type == BINARY_OPERATION) {
-        BinaryOperation *binary_needle = reinterpret_cast<BinaryOperation *>(needle);
-        BinaryOperation *binary_haystack = reinterpret_cast<BinaryOperation *>(haystack);
-        return binary_needle->operation == binary_haystack->operation &&
-               expression_matches(binary_needle->left, binary_haystack->left, variables) &&
-               expression_matches(binary_needle->right, binary_haystack->right, variables);
-    }
-    if (needle_type == QUANTIFIER) {
-        Quantifier *quantifier_needle = reinterpret_cast<Quantifier *>(needle);
-        Quantifier *quantifier_haystack = reinterpret_cast<Quantifier *>(haystack);
-        return expression_matches(quantifier_needle->next, quantifier_haystack->next, variables);
-    }
-    if (needle_type == ARGUMENTS_HANDLER) {
-        ArgumentsHandler *arguments_needle = reinterpret_cast<ArgumentsHandler *>(needle);
-        ArgumentsHandler *arguments_haystack = reinterpret_cast<ArgumentsHandler *>(haystack);
-        bool equals = arguments_needle->name == arguments_haystack->name &&
-                      arguments_needle->terms.size() == arguments_haystack->terms.size();
-        for (size_t i = 0; i < arguments_needle->terms.size(); i++) {
-            equals &= expression_matches(arguments_needle->terms[i], arguments_haystack->terms[i], variables);
-        }
-        return equals;
-    }
-    if (needle_type == ZERO) {
-        return true;
-    }
-    if (needle_type == STROKE) {
-        Stroke *stroke_needle = reinterpret_cast<Stroke *>(needle);
-        Stroke *stroke_haystack = reinterpret_cast<Stroke *>(haystack);
-        return expression_matches(stroke_needle->operand, stroke_haystack->operand, variables);
-    }
-    throw std::runtime_error("An error occurred in HW4::expression_matches()");
-}
-
-bool ProofChecker::expression_matches(Expression *needle, Expression *haystack) {
-    std::map<std::string, Expression *> variables;
-    return expression_matches(needle, haystack, variables);
+void ProofChecker::add_expression(Expression *expression) {
+    expressions.emplace_back(expression);
+    expression_hashes.insert(expression->hash());
 }
 
 bool ProofChecker::is_axiom(Expression *axiom, Expression *expression) {
-    return expression_matches(axiom, expression);
+    return axiom->is_substitute(expression);
 }
 
-int ProofChecker::get_axiom(const std::vector<Expression *> &axioms, Expression *expression) {
+int ProofChecker::get_axiom(Expression *expression) {
     for (size_t i = 0; i < axioms.size(); i++) {
         Expression *axiom = axioms[i];
         if (is_axiom(axiom, expression)) {
-            return (int) i + 1;
+            return (int) i;
         }
     }
     return NO_AXIOM;
@@ -220,7 +137,7 @@ PredicateResult ProofChecker::get_predicate_rule(Expression *expression) {
     return result;
 }
 
-PredicateResult ProofChecker::is_predicate_axiom(Expression *expression) {
+PredicateResult ProofChecker::get_predicate_axiom(Expression *expression) {
     using Expressions::Implication;
     using Expressions::ExistsQuantifier;
     using Expressions::ForallQuantifier;
@@ -314,4 +231,20 @@ int ProofChecker::get_arithmetic_axiom(Expression *expression) {
         return -1;
     }
     return (int) arithmetic_axioms.size();
+}
+
+std::pair<size_t, size_t> ProofChecker::get_modus_ponens(Expression *expression) {
+    for (size_t i = 0; i < expressions.size(); i++) {
+        Expression *approve = expressions[i];
+        if (check_class_inherity<Implication>(*approve)) {
+            Implication *implication_approve = reinterpret_cast<Implication*>(approve);
+            if (implication_approve->right->hash() == expression->hash() && implication_approve->right->equals(expression)) {
+                auto it = expression_hashes.find(implication_approve->left);
+                if (it != expression_hashes.end()) {
+                    return std::make_pair(i, it->second);
+                }
+            }
+        }
+    }
+    return std::make_pair(static_cast<size_t>(-1), static_cast<size_t>(-1));
 }

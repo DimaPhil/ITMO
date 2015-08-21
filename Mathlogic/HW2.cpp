@@ -125,13 +125,16 @@ struct HW2 {
         return NO_AXIOM;
     }
 
-    void add_self_proof(std::vector<std::string> &result, const std::string &alpha) {
-        result.push_back(alpha + "->(" + alpha + "->" + alpha + ")");
-        result.push_back("(" + alpha + "->(" + alpha + "->" + alpha + "))->" +
-                         "(" + alpha + "->((" + alpha + "->" + alpha + ")->" + alpha + "))->" +
-                         "(" + alpha + "->" + alpha + ")");
-        result.push_back("(" + alpha + "->((" + alpha + "->" + alpha + ")->" + alpha + "))->(" + alpha + "->" + alpha + ")");
-        result.push_back("(" + alpha + "->((" + alpha + "->" + alpha + ")" + "->" + alpha + "))");
+    void add_self_proof(std::vector<std::string> &result, const std::string &proposal_string) {
+        result.push_back(proposal_string + "->(" + proposal_string + "->" + proposal_string + ")");
+        result.push_back("(" + proposal_string + "->(" + proposal_string + "->" + proposal_string + "))->" +
+                         "(" + proposal_string + "->((" + proposal_string + "->" + proposal_string + ")->" +
+                         proposal_string + "))->" +
+                         "(" + proposal_string + "->" + proposal_string + ")");
+        result.push_back("(" + proposal_string + "->((" + proposal_string + "->" + proposal_string + ")->" +
+                         proposal_string + "))->(" + proposal_string + "->" + proposal_string + ")");
+        result.push_back("(" + proposal_string + "->((" + proposal_string + "->" + proposal_string + ")" + "->" +
+                         proposal_string + "))");
     }
 
     void run(const char *input, const char *output) {
@@ -152,10 +155,10 @@ struct HW2 {
 
         std::string needle = split_line[1];
         std::vector<std::string> assumptions_strings = Utils::split(split_line[0], ',');
-        std::string alpha = assumptions_strings.back();
-        Expression *alpha_expression = parse_expression(alpha);
-        if (check_class_inherity<BinaryOperation>(*alpha_expression)) {
-            alpha = "(" + alpha + ")";
+        std::string proposal_string = assumptions_strings.back();
+        Expression *proposal_string_expression = parse_expression(proposal_string);
+        if (check_class_inherity<BinaryOperation>(*proposal_string_expression)) {
+            proposal_string = "(" + proposal_string + ")";
         }
         assumptions_strings.pop_back();
 
@@ -185,9 +188,9 @@ struct HW2 {
             if (get_axiom(axioms, expression) != NO_AXIOM ||
                 assumptions.find(expression->hash()) != assumptions.end()) {
                 result.push_back(delta);
-                result.push_back("(" + delta + ")->(" + alpha + "->" + delta + ")");
-            } else if (expression->equals(alpha_expression)) {
-                add_self_proof(result, alpha);
+                result.push_back("(" + delta + ")->(" + proposal_string + "->" + delta + ")");
+            } else if (expression->equals(proposal_string_expression)) {
+                add_self_proof(result, proposal_string);
             } else {
                 std::vector<std::pair<size_t, size_t>> &part = parts[expression->hash()];
                 for (size_t i = 0; i < part.size(); i++) {
@@ -195,15 +198,16 @@ struct HW2 {
                     if (it != all_hashes.end()) {
                         std::string delta_i = delta;
                         std::string delta_j = deltas[it->second - 1];
-                        result.push_back("(" + alpha + "->" + delta_j + ")->((" + alpha + "->((" + delta_j + ")->" + delta_i + "))->" +
-                                         "(" + alpha + "->" + delta_i + "))");
-                        result.push_back("((" + alpha + "->((" + delta_j + ")->" + delta_i + "))->(" + alpha + "->" + delta_i + "))");
+                        result.push_back("(" + proposal_string + "->" + delta_j + ")->((" + proposal_string + "->((" + delta_j + ")->" + delta_i + "))->" +
+                                         "(" + proposal_string + "->" + delta_i + "))");
+                        result.push_back("((" + proposal_string + "->((" + delta_j + ")->" + delta_i + "))->(" +
+                                         proposal_string + "->" + delta_i + "))");
                         break;
                     }
                 }
             }
             all_hashes[expression->hash()] = line_number;
-            result.push_back(alpha + "->" + delta);
+            result.push_back(proposal_string + "->" + delta);
         }
 
         for (size_t i = 0; i < assumptions_strings.size(); i++) {
@@ -213,7 +217,7 @@ struct HW2 {
             }
         }
         std::cout << "|-";
-        std::cout << alpha << "->" << needle << '\n';
+        std::cout << proposal_string << "->" << needle << '\n';
         for (size_t i = 0; i < result.size(); i++) {
             std::cout << result[i] << '\n';
         }

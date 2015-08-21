@@ -9,6 +9,8 @@
       <sourceFolder url="file://$MODULE_DIR$/HW4.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ProofChecker.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ProofChecker.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ProofDeduction.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ProofDeduction.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Utils.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Utils.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/expressions/Add.cpp" isTestSource="false" />
