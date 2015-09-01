@@ -12,17 +12,7 @@
     </ADDITIONAL_GENERATION_ENVIRONMENT>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b08373da-7661-47cf-baca-d927ebab939a" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ProofDeduction.cpp" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ProofDeduction.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeLists.txt" afterPath="$PROJECT_DIR$/CMakeLists.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HW2.cpp" afterPath="$PROJECT_DIR$/HW2.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HW4.cpp" afterPath="$PROJECT_DIR$/HW4.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/Mathlogic.iml" afterPath="$PROJECT_DIR$/.idea/Mathlogic.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ProofChecker.cpp" afterPath="$PROJECT_DIR$/ProofChecker.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ProofChecker.h" afterPath="$PROJECT_DIR$/ProofChecker.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="b08373da-7661-47cf-baca-d927ebab939a" name="Default" comment="" />
     <ignored path="Mathlogic.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
