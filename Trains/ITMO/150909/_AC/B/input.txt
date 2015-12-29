@@ -1,0 +1,1 @@
+Test with all special symbols &amp; &lt; &gt; &apos; &quot;
