@@ -1,17 +1,255 @@
-__author__ = "Dmitry Philippov"
-
+__author__ = 'Dmitry Philippov'
+ 
 import sys
-
-sys.stdout = open("multiplication.out", "w")
-
-
+ 
+sys.stdout = open('multiplication.out', 'w')
+ 
 def main():
-    print("""start: s
+    print('''start: s
 accept: ac
 reject: rj
 blank: _
-
-""")
-
-if __name__ == "__main__":
+s 1 -> process 1 ^
+s 0 -> process 0 ^
+process * -> process * >
+process ! -> process ! >
+process $ -> process $ >
+process . -> process . >
+process 0 -> process 0 >
+process 1 -> process 1 >
+process 2 -> process 2 >
+process 3 -> process 3 >
+process 4 -> process 4 >
+process _ -> set_! _ ^
+set_! _ -> find_blank ! ^
+find_blank * -> find_blank * <
+find_blank ! -> find_blank ! <
+find_blank $ -> find_blank $ <
+find_blank . -> find_blank . <
+find_blank 0 -> find_blank 0 <
+find_blank 1 -> find_blank 1 <
+find_blank 2 -> find_blank 2 <
+find_blank 3 -> find_blank 3 <
+find_blank 4 -> find_blank 4 <
+find_blank _ -> for_digits _ ^
+for_digits _ -> for_digits _ >
+for_digits 0 -> found_digit 2 >
+for_digits 1 -> found_digit 3 >
+for_digits * -> found_digit + >
+for_digits ! -> decode_digits ! >
+found_digit 0 -> found_digit 0 >
+found_digit 1 -> found_digit 1 >
+found_digit * -> found_digit * >
+found_digit 2 -> found_digit 2 >
+found_digit 3 -> found_digit 3 >
+found_digit 4 -> found_digit 4 >
+found_digit ! -> found_digit ! >
+found_digit $ -> found_digit $ >
+found_digit . -> found_digit . >
+found_digit _ -> set_zero _ ^
+set_zero _ -> found_moving_left 0 <
+found_moving_left 1 -> found_moving_left 1 <
+found_moving_left 0 -> found_moving_left 0 <
+found_moving_left * -> found_moving_left * <
+found_moving_left + -> for_digits * >
+found_moving_left 2 -> for_digits 0 >
+found_moving_left 3 -> for_digits 1 >
+found_moving_left ! -> found_moving_left ! <
+found_moving_left _ -> found_digit _ >
+decode_digits * -> decode_digits * >
+decode_digits ! -> decode_digits ! >
+decode_digits $ -> decode_digits $ >
+decode_digits . -> decode_digits . >
+decode_digits 0 -> decode_digits 0 >
+decode_digits 1 -> decode_digits 1 >
+decode_digits 2 -> decode_digits 2 >
+decode_digits 3 -> decode_digits 3 >
+decode_digits 4 -> decode_digits 4 >
+decode_digits _ -> set_!2 _ ^
+set_!2 _ -> new_find_blank ! ^
+new_find_blank 0 -> new_find_blank 0 <
+new_find_blank 1 -> new_find_blank 1 <
+new_find_blank * -> new_find_blank * <
+new_find_blank 2 -> new_find_blank 2 <
+new_find_blank 3 -> new_find_blank 3 <
+new_find_blank 4 -> new_find_blank 4 <
+new_find_blank ! -> new_find_blank ! <
+new_find_blank $ -> new_find_blank $ <
+new_find_blank . -> new_find_blank . <
+new_find_blank _ -> find_multiply _ ^
+find_multiply ! -> find_multiply ! >
+find_multiply _ -> find_multiply _ >
+find_multiply $ -> find_multiply $ >
+find_multiply . -> find_multiply . >
+find_multiply * -> multiply * ^
+find_multiply 0 -> find_multiply 0 >
+find_multiply 1 -> find_multiply 1 >
+find_multiply 2 -> find_multiply 2 >
+find_multiply 3 -> find_multiply 3 >
+find_multiply 4 -> find_multiply 4 >
+multiply * -> multiply * >
+multiply 0 -> find_blank_right0 2 >
+multiply 1 -> find_blank_right1 3 >
+multiply ! -> at_multiply_sign ! >
+find_blank_right0 0 -> find_blank_right0 0 >
+find_blank_right0 1 -> find_blank_right0 1 >
+find_blank_right0 ! -> find_blank_right0 ! >
+find_blank_right0 _ -> multiply_go_right 0 <
+find_blank_right1 0 -> find_blank_right1 0 >
+find_blank_right1 1 -> find_blank_right1 1 >
+find_blank_right1 ! -> find_blank_right1 ! >
+find_blank_right1 _ -> multiply_go_right 1 <
+multiply_go_right 1 -> multiply_go_right 1 <
+multiply_go_right 0 -> multiply_go_right 0 <
+multiply_go_right 2 -> multiply 0 >
+multiply_go_right 3 -> multiply 1 >
+multiply_go_right ! -> multiply_go_right ! <
+at_multiply_sign 0 -> at_multiply_sign 0 <
+at_multiply_sign 1 -> at_multiply_sign 1 <
+at_multiply_sign 2 -> at_multiply_sign 2 <
+at_multiply_sign 3 -> at_multiply_sign 3 <
+at_multiply_sign 4 -> at_multiply_sign 4 <
+at_multiply_sign ! -> at_multiply_sign ! <
+at_multiply_sign _ -> at_multiply_sign _ <
+at_multiply_sign $ -> at_multiply_sign $ <
+at_multiply_sign . -> at_multiply_sign . <
+at_multiply_sign * -> lets_multiply * ^
+lets_multiply * -> lets_multiply * <
+lets_multiply 0 -> lets_multiply0 . ^
+lets_multiply 1 -> lets_multiply1 . ^
+lets_multiply _ -> clear_everything _ >
+lets_multiply0 0 -> lets_multiply0 0 >
+lets_multiply0 1 -> lets_multiply0 1 >
+lets_multiply0 * -> lets_multiply0 * >
+lets_multiply0 2 -> lets_multiply0 2 >
+lets_multiply0 3 -> lets_multiply0 3 >
+lets_multiply0 4 -> lets_multiply0 4 >
+lets_multiply0 ! -> lets_multiply0 ! >
+lets_multiply0 $ -> lets_multiply0 $ >
+lets_multiply0 . -> lets_multiply0 . >
+lets_multiply0 _ -> multiply_set_0 _ ^
+multiply_set_0 _ -> multiply_go_left_0 0 <
+multiply_go_left_0 0 -> multiply_go_left_0 0 <
+multiply_go_left_0 1 -> multiply_go_left_0 1 <
+multiply_go_left_0 * -> multiply_go_left_0 * <
+multiply_go_left_0 2 -> multiply_go_left_0 2 <
+multiply_go_left_0 3 -> multiply_go_left_0 3 <
+multiply_go_left_0 4 -> multiply_go_left_0 4 <
+multiply_go_left_0 ! -> multiply_go_left_0 ! <
+multiply_go_left_0 _ -> multiply_go_left_0 _ <
+multiply_go_left_0 $ -> multiply_go_left_0 $ <
+multiply_go_left_0 . -> next_number . ^
+next_number . -> next_number . <
+next_number 0 -> lets_multiply 0 ^
+next_number 1 -> lets_multiply 1 ^
+next_number _ -> lets_multiply _ ^
+lets_multiply1 0 -> lets_multiply1 0 >
+lets_multiply1 1 -> lets_multiply1 1 >
+lets_multiply1 * -> lets_multiply1 * >
+lets_multiply1 2 -> lets_multiply1 2 >
+lets_multiply1 3 -> lets_multiply1 3 >
+lets_multiply1 4 -> lets_multiply1 4 >
+lets_multiply1 _ -> lets_multiply1 _ >
+lets_multiply1 $ -> lets_multiply1 $ >
+lets_multiply1 . -> lets_multiply1 . >
+lets_multiply1 ! -> set_!3 ! ^
+set_!3 ! -> set_!4 ! >
+set_!4 * -> set_!4 * >
+set_!4 _ -> set_!4 _ >
+set_!4 $ -> set_!4 $ >
+set_!4 . -> set_!4 . >
+set_!4 0 -> set_!4 0 >
+set_!4 1 -> set_!4 1 >
+set_!4 2 -> set_!4 2 >
+set_!4 3 -> set_!4 3 >
+set_!4 4 -> set_!4 4 >
+set_!4 ! -> doitplease ! ^
+doitplease ! -> gogogo $ >
+gogogo * -> gogogo * >
+gogogo ! -> gogogo ! >
+gogogo $ -> gogogo $ >
+gogogo . -> gogogo . >
+gogogo 0 -> gogogo 0 >
+gogogo 1 -> gogogo 1 >
+gogogo 2 -> gogogo 2 >
+gogogo 3 -> gogogo 3 >
+gogogo 4 -> gogogo 4 >
+gogogo _ -> sum _ ^
+sum _ -> sum _ <
+sum 0 -> sum_left_0 2 <
+sum 1 -> sum_left_1 3 <
+sum ! -> ensum ! <
+sum_left_0 0 -> sum_left_0 0 <
+sum_left_0 1 -> sum_left_0 1 <
+sum_left_0 2 -> sum_0 0 <
+sum_left_0 3 -> sum_0 1 <
+sum_left_0 $ -> sum_0 ! <
+sum_left_0 ! -> sum_left_0 ! <
+sum_0 0 -> sum_right 2 >
+sum_0 1 -> sum_right 3 >
+sum_right 0 -> sum_right 0 >
+sum_right 1 -> sum_right 1 >
+sum_right ! -> sum_right ! >
+sum_right 2 -> sum 0 <
+sum_right 3 -> sum 1 <
+sum_left_1 0 -> sum_left_1 0 <
+sum_left_1 1 -> sum_left_1 1 <
+sum_left_1 2 -> s1 0 <
+sum_left_1 3 -> s1 1 <
+sum_left_1 $ -> s1 ! <
+sum_left_1 ! -> sum_left_1 ! <
+s1 0 -> sum_right 3 >
+s1 1 -> ost 2 <
+ost 0 -> go_finally 1 >
+ost 1 -> ost 0 <
+go_finally 0 -> go_finally 0 >
+go_finally 1 -> go_finally 1 >
+go_finally * -> go_finally * >
+go_finally 2 -> go_finally 2 >
+go_finally 3 -> go_finally 3 >
+go_finally 4 -> go_finally 4 >
+go_finally _ -> go_finally _ >
+go_finally $ -> go_finally $ >
+go_finally . -> go_finally . >
+go_finally ! -> sum_right ! ^
+ensum 0 -> ensum 0 <
+ensum 1 -> ensum 1 <
+ensum 2 -> ensum 0 <
+ensum 3 -> ensum 1 <
+ensum ! -> lets_multiply0 ! ^
+clear_everything 0 -> clear_everything 0 >
+clear_everything 1 -> clear_everything 1 >
+clear_everything * -> clear_everything * >
+clear_everything 2 -> clear_everything 2 >
+clear_everything 3 -> clear_everything 3 >
+clear_everything 4 -> clear_everything 4 >
+clear_everything ! -> clear_everything ! >
+clear_everything $ -> clear_everything $ >
+clear_everything . -> clear_everything . >
+clear_everything _ -> delete_all _ ^
+delete_all _ -> delete_all2 _ <
+delete_all2 0 -> delete_all2 _ <
+delete_all2 1 -> delete_all2 _ <
+delete_all2 ! -> delete_all3 _ <
+delete_all2 * -> delete_all2 _ <
+delete_all2 . -> delete_all2 _ <
+delete_all2 _ -> delete_it_fuck _ >
+delete_all3 * -> delete_all3 * <
+delete_all3 _ -> delete_all3 _ <
+delete_all3 $ -> delete_all3 $ <
+delete_all3 . -> delete_all3 . <
+delete_all3 0 -> delete_all3 0 <
+delete_all3 1 -> delete_all3 1 <
+delete_all3 2 -> delete_all3 2 <
+delete_all3 3 -> delete_all3 3 <
+delete_all3 4 -> delete_all3 4 <
+delete_all3 ! -> delete_all4 ! ^
+delete_all4 ! -> delete_all2 _ <
+delete_it_fuck _ -> delete_it_fuck _ >
+delete_it_fuck 0 -> fuck_fuck_fuck _ >
+fuck_fuck_fuck 0 -> fuck_fuck_fuck _ >
+fuck_fuck_fuck 1 -> ac 1 ^
+fuck_fuck_fuck _ -> ac 0 ^''')
+ 
+if __name__ == '__main__':
     main()
