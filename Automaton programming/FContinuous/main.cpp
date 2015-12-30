@@ -106,7 +106,7 @@ int main() {
      }
   }
   std::vector<double> answer;
-  assert(gauss(matrix, answer) == 1);
+  assert(gauss(matrix, answer) != 0);
   for (int i = 0; i < n; i++) {
     printf("%.10f %.10f\n", answer[2 * i], answer[2 * i + 1]);
   }
