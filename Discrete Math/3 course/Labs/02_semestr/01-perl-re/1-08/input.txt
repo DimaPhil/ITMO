@@ -1,0 +1,15 @@
+good (excellent) phrase
+good (too bad) phrase
+good ((recursive)) phrase
+word () is not () in brackets
+bad (() recursive) phrase
+bad (recursive ()) phrase
+bad (() recursive ()) phrase
+bad (recursive( phrase
+bad )recursive) phrase
+no brackets here
+(not (not (not (here!))))
+( ( ( ( ( ) ) ) ) )
+(a (a (a (a () ) ) ) ) ) 
+( ( ( ( (yes yes) ) ) ) )
+( ( ( ( (no()no) ) ) ) )
