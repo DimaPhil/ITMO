@@ -1,0 +1,162 @@
+\documentclass[11pt,a4paper,oneside]{article}
+
+\usepackage[english,russian]{babel}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{expdlist}
+\usepackage{mfpic}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{comment}
+%\usepackage{listings}
+\usepackage{epigraph}
+\usepackage{url}
+\usepackage{ulem}
+
+\DeclareMathOperator{\nott}{not}
+
+\begin{document}
+
+\renewcommand{\t}[1]{\mbox{\texttt{#1}}}
+\newcommand{\s}[1]{\mbox{``\t{#1}''}}
+\newcommand{\eps}{\varepsilon}
+\renewcommand{\phi}{\varphi}
+\newcommand{\plainhat}{{\char 94}}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\w}[1]{``\t{#1}''}
+
+\binoppenalty=10000
+\relpenalty=10000
+
+\epigraph{Филиппов Дмитрий, M3339}
+
+\begin{LARGE} \textbf{Лабораторная работа №2. Ручное построение нисходящих синтаксических анализаторов} \end{LARGE}
+\newline
+
+\textbf{1. Разработка грамматики}
+\newline                    
+\newline
+
+Построим грамматику.
+
+\begin{itemize}
+  \item $S \rightarrow not S$
+  \item $S \rightarrow TS'$
+  \item $S' \rightarrow \mbox{or TS'}|\eps$
+  \item $T \rightarrow FT'$
+  \item $T' \rightarrow \mbox{xor FT'}|\eps$
+  \item $F \rightarrow GP'$
+  \item $P' \rightarrow \mbox{and GP'}|\eps$
+  \item $G \rightarrow (S)|[a-z]$
+\end{itemize}
+
+\begin{tabular}{|c||r|rrr||}
+\hline
+ & Нетерминал & Описание \\
+\hline
+\hline
+ & S & Логическое выражение \\
+ & T & Логическое выражение, содержащее только $and$, $xor$ \\
+ & S' & Продолжение логического выражения \\
+\hline
+\end{tabular}
+\newline
+
+В грамматике есть левая рекурсия. Устраним ее. Получится грамматика:
+
+\begin{itemize}
+  \item $S' \rightarrow OSS'|OS$
+  \item $S \rightarrow (S)S'|not$ $SS'|[a-z]S'$
+  \item $S \rightarrow (S)|[a-z]|not$ $S$
+  \item $O \rightarrow and|or|xor$
+\end{itemize}
+
+А потом упростим:
+
+\begin{itemize}
+  \item $S' \rightarrow OSS'|\eps$
+  \item $S \rightarrow (S)S'|not$ $SS'|[a-z]S'$
+	\item $O \rightarrow and|or|xor$
+\end{itemize}
+
+\begin{tabular}{|c||r|rrr||}
+\hline
+ & Нетерминал & Описание \\
+\hline
+\hline
+ & S & логическое выражение  \\
+ & S' & продолжение логического выражения \\
+ & O & Логическая операция \\
+\hline
+\end{tabular}
+\newline
+
+\textbf{2. Построение лексического анализатора}
+\newline                    
+\newline
+
+В грамматике терминалы~--- $[a-z]$, $or$, $xor$, $and$.
+
+Построим лексический анализатор. Заведем класс $Token$ для хранения терминалов.
+
+$public$ $enum$ $Token$ $\{$
+
+    $LPAREN,$ $RPAREN,$ $VARIABLE,$ $AND,$ $OR,$ $XOR,$ $NOT,$ $END$
+
+$\}$
+
+\begin{tabular}{|c||r|rrr|}
+\hline
+ & Терминал & Токен \\
+\hline
+\hline
+ & ( & LPAREN  \\
+ & ) & RPAREN \\
+ & a-z & VARIABLE \\
+ & not & NOT \\
+ & and & AND \\
+ & or & OR \\
+ & xor & XOR \\
+ & \$ & END \\
+\hline
+\end{tabular}
+\newline
+
+\textbf{3. Построение синтаксического анализатора}
+\newline                    
+\newline
+
+Построим множества $FIRST$ и $FOLLOW$ для нетерминалов нашей грамматики.
+
+\begin{tabular}{|c||r|r|rrr||}
+\hline
+ & Нетерминал & FIRST & FOLLOW \\
+\hline
+\hline
+ & S & (, a-z, not & ), and, or, xor, \$ \\
+ & S' & and, or, xor, $\eps$ & ), \$ \\
+ & O & and, or, xor & (, a-z, not \\
+\hline
+\end{tabular}
+\newline
+
+Тесты:
+
+\begin{itemize}
+ \item $a, m, z$~--- Тесты на правило $S$ $\rightarrow$ $[a-z]S'$
+ \item $\mbox{a and b}$~--- Тест на правило $SOS$
+ \item $\mbox{a xor b}$~--- Тест на правило $SOS$
+ \item $\mbox{a or b}$~--- Тест на правило $SOS$
+ \item $not$ $a$~--- Тест на правило $not$ $SS'$
+ \item $(a)$~--- Тест на правило $(S)S'$
+ \item $\mbox{(a and (b and (c or (not d xor not c))) or not c)}$~--- Большой тест
+ \item $\mbox{not not not not not b}$~--- Множественное применение not
+ \item $($~--- Тест на неккоректную скобочную последовательность
+ \item $)$~--- Тест на неккоректную скобочную последовательность
+ \item $\mbox{(a an b)}$~--- Тест на неккоректную операцию
+ \item $\mbox{(a and (b xor ))}$~--- Тест на недостающую переменную
+\end{itemize}
+
+\end{document}
