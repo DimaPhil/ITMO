@@ -29,6 +29,8 @@ public class Main {
             "a or b",
             "not a",
             "(a)",
+            "(a and b)",
+            "((a and b))",
             "(((((a and b)))))",
             "(a and (b and (c or (not d and not c))) or not c)",
             "not not not not not b"
@@ -56,6 +58,6 @@ public class Main {
 
             }
         }
-        visualizeExpression("(a and b) and c");
+        visualizeExpression("(a and (b and c))");
     }
 }

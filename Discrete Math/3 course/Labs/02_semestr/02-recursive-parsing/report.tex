@@ -42,14 +42,10 @@
 Построим грамматику.
 
 \begin{itemize}
-  \item $S \rightarrow not S$
-  \item $S \rightarrow TS'$
-  \item $S' \rightarrow \mbox{or TS'}|\eps$
-  \item $T \rightarrow FT'$
-  \item $T' \rightarrow \mbox{xor FT'}|\eps$
-  \item $F \rightarrow GP'$
-  \item $P' \rightarrow \mbox{and GP'}|\eps$
-  \item $G \rightarrow (S)|[a-z]$
+  \item $E \rightarrow \mbox{C | E or C}$
+  \item $C \rightarrow \mbox{X | C and X}$
+  \item $X \rightarrow \mbox{N | X xor N}$
+  \item $N \rightarrow \mbox{[a-z] | not N | (E)}$
 \end{itemize}
 
 \begin{tabular}{|c||r|rrr||}
@@ -57,9 +53,10 @@
  & Нетерминал & Описание \\
 \hline
 \hline
- & S & Логическое выражение \\
- & T & Логическое выражение, содержащее только $and$, $xor$ \\
- & S' & Продолжение логического выражения \\
+ & E (Expression) & Логическое выражение \\
+ & C (Conjuction) & Конъюнкция \\
+ & X (Xor) & Ксор \\
+ & N (Negate) & Отрицание \\
 \hline
 \end{tabular}
 \newline
@@ -67,18 +64,25 @@
 В грамматике есть левая рекурсия. Устраним ее. Получится грамматика:
 
 \begin{itemize}
-  \item $S' \rightarrow OSS'|OS$
-  \item $S \rightarrow (S)S'|not$ $SS'|[a-z]S'$
-  \item $S \rightarrow (S)|[a-z]|not$ $S$
-  \item $O \rightarrow and|or|xor$
+  \item $E \rightarrow \mbox{CE' | C}$
+  \item $E' \rightarrow \mbox{or CE' | or C}$
+  \item $C \rightarrow \mbox{XC' | X}$
+  \item $C' \rightarrow \mbox{and XC' | and X}$
+  \item $X \rightarrow \mbox{NX' | N}$
+  \item $X' \rightarrow \mbox{xor NX' | xor N}$
+  \item $N \rightarrow \mbox{[a-z] | not N | (E)}$
 \end{itemize}
 
 А потом упростим:
 
 \begin{itemize}
-  \item $S' \rightarrow OSS'|\eps$
-  \item $S \rightarrow (S)S'|not$ $SS'|[a-z]S'$
-	\item $O \rightarrow and|or|xor$
+  \item $E \rightarrow CE'$
+  \item $E' \rightarrow \mbox{or CE' | $\eps$}$
+  \item $C \rightarrow XC'$
+  \item $C' \rightarrow \mbox{and XC' | $\eps$}$
+  \item $X \rightarrow NX'$
+  \item $X' \rightarrow \mbox{xor NX' | $\eps$}$
+  \item $N \rightarrow \mbox{[a-z] | not N | (E)}$
 \end{itemize}
 
 \begin{tabular}{|c||r|rrr||}
@@ -86,9 +90,13 @@
  & Нетерминал & Описание \\
 \hline
 \hline
- & S & логическое выражение  \\
- & S' & продолжение логического выражения \\
- & O & Логическая операция \\
+ & E  & Логическое выражение \\
+ & E' & Продолжение логического выражения \\
+ & C  & Конъюнкция \\
+ & C' & Продолжение конъюнкции \\
+ & X  & Ксор \\
+ & X' & Продолжение ксора \\
+ & N  & Отрицание \\
 \hline
 \end{tabular}
 \newline
@@ -97,7 +105,7 @@
 \newline                    
 \newline
 
-В грамматике терминалы~--- $[a-z]$, $or$, $xor$, $and$.
+В грамматике терминалы~--- $[a-z]$, $or$, $xor$, $and$, $not$.
 
 Построим лексический анализатор. Заведем класс $Token$ для хранения терминалов.
 
@@ -135,9 +143,13 @@ $\}$
  & Нетерминал & FIRST & FOLLOW \\
 \hline
 \hline
- & S & (, a-z, not & ), and, or, xor, \$ \\
- & S' & and, or, xor, $\eps$ & ), \$ \\
- & O & and, or, xor & (, a-z, not \\
+ & E  & (, a-z, not  & ), \$ \\
+ & E' & or, $\eps$   & ), \$ \\
+ & C  & (, a-z, not  & or, ), \$ \\
+ & C' & and, $\eps$  & or, ), \$ \\
+ & X  & (, a-z, not  & and, or, ), \$ \\
+ & X' & xor, $\eps$  & and, or, ), \$ \\
+ & N  & (, a-z, not, & xor, and, or, ), \$ \\
 \hline
 \end{tabular}
 \newline
@@ -145,12 +157,13 @@ $\}$
 Тесты:
 
 \begin{itemize}
- \item $a, m, z$~--- Тесты на правило $S$ $\rightarrow$ $[a-z]S'$
- \item $\mbox{a and b}$~--- Тест на правило $SOS$
- \item $\mbox{a xor b}$~--- Тест на правило $SOS$
- \item $\mbox{a or b}$~--- Тест на правило $SOS$
- \item $not$ $a$~--- Тест на правило $not$ $SS'$
- \item $(a)$~--- Тест на правило $(S)S'$
+ \item $a, m, z$~--- Тесты на правило $N$ $\rightarrow$ $[a-z]$
+ \item $\mbox{a and b}$~--- Тест на примитивную операцию
+ \item $\mbox{a xor b}$~--- Тест на примитивную операцию
+ \item $\mbox{a or b}$~--- Тест на примитивную операцию
+ \item $not$ $a$~--- Тест на примитивную операцию
+ \item $(a)$~--- Тест на правило $(E)$
+ \item $\mbox{(((((a and b)))))}$~--- Тест с большим количеством вложенных скобок
  \item $\mbox{(a and (b and (c or (not d xor not c))) or not c)}$~--- Большой тест
  \item $\mbox{not not not not not b}$~--- Множественное применение not
  \item $($~--- Тест на неккоректную скобочную последовательность

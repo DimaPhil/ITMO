@@ -1,8 +1,6 @@
 package ru.ifmo.ctddev.filippov.parser;
 
-import static ru.ifmo.ctddev.filippov.parser.LexicalAnalyzer.Token.AND;
-import static ru.ifmo.ctddev.filippov.parser.LexicalAnalyzer.Token.OR;
-import static ru.ifmo.ctddev.filippov.parser.LexicalAnalyzer.Token.XOR;
+import static ru.ifmo.ctddev.filippov.parser.LexicalAnalyzer.Token.*;
 
 /**
  * Created by dmitry on 23.03.16.
@@ -10,83 +8,109 @@ import static ru.ifmo.ctddev.filippov.parser.LexicalAnalyzer.Token.XOR;
 public class Parser {
     private LexicalAnalyzer analyzer;
 
-    private boolean isOperationToken(LexicalAnalyzer.Token token) {
-        return token == AND ||
-                token == LexicalAnalyzer.Token.OR ||
-                token == LexicalAnalyzer.Token.XOR;
+    private Tree E() throws ParseException {
+        Tree sub = C();
+        if (analyzer.getCurToken() == OR) {
+            Tree cont = EPrime();
+            return new Tree("E, or", sub, cont);
+        }
+        return new Tree("E -> C", sub);
     }
 
-    private String getOperation(LexicalAnalyzer.Token token) {
-        if (token == AND) {
-            return "and";
+    private Tree EPrime() throws ParseException {
+        if (analyzer.getCurToken() == OR) {
+            analyzer.nextToken();
+            Tree sub = C();
+            if (analyzer.getCurToken() == OR) {
+                Tree cont = EPrime();
+                return new Tree("E', or'", sub, cont);
+            } else {
+                return new Tree("E', or", sub);
+            }
         }
-        if (token == OR) {
-            return "or";
-        }
-        if (token == XOR) {
-            return "xor";
-        }
-        return "wrong operation";
+        return new Tree("E', eps");
     }
 
-    Tree S() throws ParseException {
-        if (analyzer.getCurToken() == LexicalAnalyzer.Token.LPAREN) {
-            analyzer.nextToken();
-            char curChar = analyzer.getCurChar();
-            Tree sub = S();
-            analyzer.nextToken();
-            if (analyzer.getCurToken() != LexicalAnalyzer.Token.RPAREN) {
-                throw new ParseException(") expected", analyzer.getCurPos());
-            }
-            if (!isOperationToken(analyzer.predictToken())) {
-                return new Tree("S, " + curChar, new Tree("("), sub, new Tree(")"));
-            }
-            analyzer.nextToken();
-            Tree cont = SPrime();
-            return new Tree("S, " + curChar, new Tree("("), sub, new Tree(")"), cont);
+    private Tree C() throws ParseException {
+        Tree sub = X();
+        if (analyzer.getCurToken() == AND) {
+            Tree cont = CPrime();
+            return new Tree("C, and", sub, cont);
         }
-        if (analyzer.getCurToken() == LexicalAnalyzer.Token.NOT) {
-            analyzer.nextToken();
-            Tree sub = S();
-            if (!isOperationToken(analyzer.predictToken())) {
-                return new Tree("S, not", sub);
-            }
-            analyzer.nextToken();
-            Tree cont = SPrime();
-            return new Tree("S, not", sub, cont);
-        }
-        if (analyzer.getCurToken() == LexicalAnalyzer.Token.VARIABLE) {
-            char curChar = analyzer.getCurChar();
-            if (!isOperationToken(analyzer.predictToken())) {
-                return new Tree("S, " + curChar);
-            }
-            analyzer.nextToken();
-            Tree cont = SPrime();
-            return new Tree("S, " + curChar, cont);
-        }
-        throw new ParseException("Expected LPAREN, NOT or VARIABLE at S(), index: " + analyzer.getCurPos());
+        return new Tree("C -> X", sub);
     }
 
-    Tree SPrime() throws ParseException {
-        if (analyzer.getCurToken() == LexicalAnalyzer.Token.END) {
-            return new Tree("S', end");
-        }
-        if (isOperationToken(analyzer.getCurToken())) {
-            String operation = getOperation(analyzer.getCurToken());
+    private Tree CPrime() throws ParseException {
+        if (analyzer.getCurToken() == AND) {
             analyzer.nextToken();
-            Tree sub = S();
-            if (!isOperationToken(analyzer.predictToken())) {
-                return new Tree("S', " + operation, sub);
+            Tree sub = X();
+            if (analyzer.getCurToken() == AND) {
+                Tree cont = CPrime();
+                return new Tree("C', and", sub, cont);
+            } else {
+                return new Tree("C', and", sub);
+            }
+        }
+        if (analyzer.getCurToken() == OR) {
+            return EPrime();
+        }
+        return new Tree("C', eps");
+    }
+
+    private Tree X() throws ParseException {
+        Tree sub = N();
+        if (analyzer.getCurToken() == XOR) {
+            Tree cont = XPrime();
+            return new Tree("X, xor", sub, cont);
+        }
+        return new Tree("X -> N", sub);
+    }
+
+    private Tree XPrime() throws ParseException {
+        if (analyzer.getCurToken() == XOR) {
+            analyzer.nextToken();
+            Tree sub = N();
+            if (analyzer.getCurToken() == XOR) {
+                Tree cont = XPrime();
+                return new Tree("X', xor", sub, cont);
+            } else {
+                return new Tree("X', xor", sub);
+            }
+        }
+        if (analyzer.getCurToken() == AND) {
+            return CPrime();
+        }
+        if (analyzer.getCurToken() == OR) {
+            return EPrime();
+        }
+        return new Tree("X', eps");
+    }
+
+    private Tree N() throws ParseException {
+        if (analyzer.getCurToken() == VARIABLE) {
+            char c = analyzer.getCurChar();
+            analyzer.nextToken();
+            return new Tree("N, " + c);
+        }
+        if (analyzer.getCurToken() == NOT) {
+            analyzer.nextToken();
+            Tree sub = N();
+            return new Tree("N, not", new Tree("not"), sub);
+        }
+        if (analyzer.getCurToken() == LPAREN) {
+            analyzer.nextToken();
+            Tree sub = E();
+            if (analyzer.getCurToken() != RPAREN) {
+                throw new ParseException("expected )", analyzer.getCurPos());
             }
             analyzer.nextToken();
-            Tree cont = SPrime();
-            return new Tree("S', " + operation, sub, cont);
+            return new Tree("N, (E)", new Tree("("), sub, new Tree(")"));
         }
-        return new Tree("S', eps");
+        throw new ParseException("expected (, not or variable at N()", analyzer.getCurPos());
     }
 
     Tree parse(String expression) throws ParseException {
         analyzer = new LexicalAnalyzer(expression);
-        return S();
+        return E();
     }
 }
