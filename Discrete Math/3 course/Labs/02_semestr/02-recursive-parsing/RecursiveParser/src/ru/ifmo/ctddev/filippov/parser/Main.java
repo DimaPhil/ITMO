@@ -33,13 +33,16 @@ public class Main {
             "((a and b))",
             "(((((a and b)))))",
             "(a and (b and (c or (not d and not c))) or not c)",
-            "not not not not not b"
+            "not not not not not b",
     };
     private static String[] failExpressions = new String[]{
             "(",
             ")",
             "(a an b)",
-            "(a and (b xor ))"
+            "(a and (b xor ))",
+            "()",
+            "a and ()",
+            "(a and b))"
     };
 
     public static void main(String[] args) {
@@ -58,6 +61,6 @@ public class Main {
 
             }
         }
-        visualizeExpression("(a and (b and c))");
+        visualizeExpression("a and b xor c");
     }
 }
